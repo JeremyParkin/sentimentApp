@@ -4,7 +4,6 @@ import json
 import replicate
 import io
 import time
-import openpyxl
 
 # Set Streamlit configuration
 st.set_page_config(page_title="MIG Sentiment Tool",
