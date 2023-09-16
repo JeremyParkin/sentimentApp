@@ -21,15 +21,20 @@ st.subheader("Experimental")
 
 
 
-analysis_placeholder = "Eg. As an academic institution, news stories covering academic presentations are typically positive or neutral, even if the subject of the presentation is not."
+analysis_placeholder = """You are a news-tagging AI.  Select the best fit tag from the following list to categorize the news story below:
+ACADEMIC: Story mentions scholarly happenings or achievements at DePaul University.
+COMMUNITY: Story mentions community events or contributions by DePaul University.
+SME: Story presents or quotes a DePaul professor as a subject matter expert.
+MISSION: Story touches on DePaul's mission or values as a catholic university.
+SPORTS: The story focuses on DePaul athletics.
+OTHER: If none of the other tags apply.
+"""
 
-analysis_note = st.text_area("Any special note on sentiment approach?", max_chars=600, key="analysis_notes",
+analysis_note = st.text_area("Write your analysis prompt here:", max_chars=600, key="analysis_notes",
                              help="This will be added as a note in the prompt for each story. Use it as is or feel free to, edit, delete, or replace it as needed.",
                              placeholder=analysis_placeholder, height=80)
 
-c1, c2, c3 = st.columns(3)
-with c1:
-    st.write("")
+c2, c3 = st.columns(2)
 
 with c2:
     random_sample = st.radio('Randomize Sample?', ['No', 'Yes'])
