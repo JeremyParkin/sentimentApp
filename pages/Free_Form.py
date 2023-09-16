@@ -30,9 +30,9 @@ SPORTS: The story focuses on DePaul athletics.
 OTHER: If none of the other tags apply.
 """
 
-analysis_note = st.text_area("Write your analysis prompt here:", max_chars=600, key="analysis_notes",
+analysis_note = st.text_area("Write your analysis prompt here:", max_chars=1000, key="analysis_notes",
                              help="This will be added as a note in the prompt for each story. Use it as is or feel free to, edit, delete, or replace it as needed.",
-                             placeholder=analysis_placeholder, height=80)
+                             placeholder=analysis_placeholder, height=200)
 
 c2, c3 = st.columns(2)
 
