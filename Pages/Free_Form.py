@@ -6,7 +6,7 @@ import io
 import time
 
 # Set Streamlit configuration
-st.set_page_config(page_title="MIG Sentiment Tool",
+st.set_page_config(page_title="MIG Free Form Analysis Tool",
                    page_icon="https://www.agilitypr.com/wp-content/uploads/2018/02/favicon-192.png",
                    layout="wide")
 
@@ -16,17 +16,12 @@ MAX_RETRIES = 3
 RETRY_DELAY = 5  # seconds
 cost_per_sec = 0.001400
 
-st.title("MIG Sentiment Tool")
+st.title("Free Form Analysis")
 st.subheader("Experimental")
 
-# named_entity = st.text_input("What brand, org, or person should the sentiment be based on?", max_chars=100,
-#                              key="named_entity")
-#
-# if len(named_entity) < 1:
-#     named_entity = "the organization"
-#
+
+
 analysis_placeholder = "Eg. As an academic institution, news stories covering academic presentations are typically positive or neutral, even if the subject of the presentation is not."
-# analysis_placeholder2 = f"As a guideline, positive stories might focus on {named_entity}'s good qualities, values, and successes as demonstrated by it and its representatives.  Negative might focus on {named_entity}'s legal or financial difficulties, lawsuits or accusations against it or its representatives, safety issues, racism, abuse, harassment, fraud, or other types of misconduct."
 
 analysis_note = st.text_area("Any special note on sentiment approach?", max_chars=600, key="analysis_notes",
                              help="This will be added as a note in the prompt for each story. Use it as is or feel free to, edit, delete, or replace it as needed.",
@@ -35,33 +30,13 @@ analysis_note = st.text_area("Any special note on sentiment approach?", max_char
 c1, c2, c3 = st.columns(3)
 with c1:
     st.write("")
-    # sentiment_switch = st.radio("Sentiment Type", ['3-way', '5-way'], )
+
 with c2:
     random_sample = st.radio('Randomize Sample?', ['No', 'Yes'])
 
 with c3:
     action_rows = st.number_input('Limit rows for testing (max 100)', min_value=1, value=5, max_value=600)
 
-
-# if sentiment_switch == '5-way':
-#     sentiment_type = "VERY POSITIVE / MODERATELY POSITIVE / NEUTRAL / MODERATELY NEGATIVE / VERY NEGATIVE / UNAVAILABLE"
-#     sentiment_rubric = f"""
-#             \nVERY POSITIVE: A positive portrayal of {named_entity}, focusing on its merits, successes, or positive contributions. A positive headline or first sentence is a good clue of a VERY POSITIVE story.
-#             \nSOMEWHAT POSITIVE: A net positive view of {named_entity}, but with some minor reservations or criticisms, maintaining a supportive stance overall.
-#             \nNEUTRAL: A passing mention or objective perspective of {named_entity}, balancing both praise and critique without favoring either.
-#             \nSOMEWHAT NEGATIVE: A mildly negative depiction of {named_entity}, highlighting its shortcomings, but may acknowledge some positive elements.
-#             \nVERY NEGATIVE: A strongly critical portrayal of {named_entity}, emphasizing significant concerns or failings.
-#             \nUNAVAILABLE: {named_entity} is not mentioned, or there is not adequate information to choose one of the other options.
-#             """
-#
-# else:
-#     sentiment_type = "POSITIVE / NEUTRAL / NEGATIVE / UNAVAILABLE"
-#     sentiment_rubric = f"""
-#             \nPOSITIVE: A net positive portrayal of {named_entity}, focusing on its merits and successes.
-#             \nNEUTRAL: A passing mention or objective perspective of {named_entity}, balancing both praise and critique without favoring either.
-#             \nNEGATIVE: A net critical portrayal of {named_entity}, emphasizing significant concerns or failings.
-#             \nUNAVAILABLE: {named_entity} is not mentioned, or there is not adequate information to choose one of the other options.
-#             """
 
 model_call = "replicate/llama-2-70b-chat:58d078176e02c219e11eb4da5a02a7830a283b14cf8f94537af893ccff5ee781"
 
