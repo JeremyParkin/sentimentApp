@@ -85,10 +85,10 @@ with st.sidebar:
     st.divider()
 
 with st.form('User Inputs'):
-    upload_file = st.file_uploader("Upload a CSV or cleaned XLSX file:", type=["csv", "xlsx"])
+    upload_file = st.file_uploader("Upload a CSV file:", type=["csv"] )
 
 
-    if csv_file:
+    if upload_file:
         try:
             if upload_file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
                 df = pd.read_excel(upload_file, nrows=action_rows)

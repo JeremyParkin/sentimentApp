@@ -64,15 +64,15 @@ with st.sidebar:
     st.divider()
 
 with st.form('User Inputs'):
-    csv_file = st.file_uploader("Upload a CSV or cleaned XLSX file:", type=["csv", "xlsx"])
+    upload_file = st.file_uploader("Upload a CSV file:", type=["csv"])
 
 
-    if csv_file:
+    if upload_file:
         try:
-            if csv_file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-                df = pd.read_excel(csv_file, nrows=action_rows)
+            if upload_file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                df = pd.read_excel(upload_file, nrows=action_rows)
             else:
-                df = pd.read_csv(csv_file, nrows=action_rows)
+                df = pd.read_csv(upload_file, nrows=action_rows)
 
             if random_sample == 'Yes':
                 df = df.sample(frac=1).reset_index(drop=True)
