@@ -173,7 +173,7 @@ elif submitted:
         # Update progress bar
         progress.progress((i + 1) / to_be_done)
 
-    required_cols = ['Headline', 'Snippet', 'Freeform Analysis']
+    required_cols = ['Headline', 'Snippet', 'Sentiment', 'Freeform Analysis']
     df_display = df.filter(required_cols)
     st.dataframe(df_display, hide_index=True)
 
