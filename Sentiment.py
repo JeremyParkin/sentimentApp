@@ -108,7 +108,7 @@ with st.form('User Inputs'):
 
     submitted = st.form_submit_button("Submit")
 
-if submitted and (csv_file is None or named_entity == "the organization"):
+if submitted and (upload_file is None or named_entity == "the organization"):
     st.error('Missing required form inputs above.')
 
 
