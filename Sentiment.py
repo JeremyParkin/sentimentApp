@@ -85,15 +85,15 @@ with st.sidebar:
     st.divider()
 
 with st.form('User Inputs'):
-    csv_file = st.file_uploader("Upload a CSV or cleaned XLSX file:", type=["csv", "xlsx"])
+    upload_file = st.file_uploader("Upload a CSV or cleaned XLSX file:", type=["csv", "xlsx"])
 
 
     if csv_file:
         try:
-            if csv_file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-                df = pd.read_excel(csv_file, nrows=action_rows)
+            if upload_file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                df = pd.read_excel(upload_file, nrows=action_rows)
             else:
-                df = pd.read_csv(csv_file, nrows=action_rows)
+                df = pd.read_csv(upload_file, nrows=action_rows)
 
             if random_sample == 'Yes':
                 df = df.sample(frac=1).reset_index(drop=True)
@@ -196,7 +196,7 @@ elif submitted:
         # Update progress bar
         progress.progress((i + 1) / to_be_done)
 
-    required_cols = ['Headline', 'Snippet', 'Entity Sentiment']
+    required_cols = ['Headline', 'Snippet', 'Sentiment', 'Entity Sentiment']
     df_display = df.filter(required_cols)
     st.dataframe(df_display, hide_index=True)
 
