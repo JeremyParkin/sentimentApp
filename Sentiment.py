@@ -145,7 +145,7 @@ elif submitted:
 
 
     for i, row in df.iterrows():
-        if len(row['Snippet']) < 350:
+        if pd.isna(row['Snippet']) or len(row['Snippet']) < 350:
             st.warning(f"Snippet is too short for story {i + 1}")
             progress.progress((i + 1) / to_be_done)
             continue
