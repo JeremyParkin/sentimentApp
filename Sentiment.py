@@ -85,26 +85,45 @@ with st.sidebar:
     st.divider()
 
 with st.form('User Inputs'):
-    upload_file = st.file_uploader("Upload a CSV file:", type=["csv"] )
-
+    upload_file = st.file_uploader("Upload a CSV file:", type=["csv"])
 
     if upload_file:
         try:
             if upload_file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-                df = pd.read_excel(upload_file, nrows=action_rows)
+                df = pd.read_excel(upload_file)
             else:
-                df = pd.read_csv(upload_file, nrows=action_rows)
+                df = pd.read_csv(upload_file)
 
             if random_sample == 'Yes':
                 df = df.sample(frac=1).reset_index(drop=True)
 
+            # Limit the rows after randomizing the sample
+            df = df.head(action_rows)
+
             df = df.rename(columns={'Published Date': 'Date'}, errors='ignore')
             df = df.rename(columns={'Coverage Snippet': 'Snippet'}, errors='ignore')
-
 
         except Exception as e:
             st.error("Error reading the file: {}".format(str(e)))
             st.stop()
+
+    # if upload_file:
+    #     try:
+    #         if upload_file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+    #             df = pd.read_excel(upload_file, nrows=action_rows)
+    #         else:
+    #             df = pd.read_csv(upload_file, nrows=action_rows)
+    #
+    #         if random_sample == 'Yes':
+    #             df = df.sample(frac=1).reset_index(drop=True)
+    #
+    #         df = df.rename(columns={'Published Date': 'Date'}, errors='ignore')
+    #         df = df.rename(columns={'Coverage Snippet': 'Snippet'}, errors='ignore')
+    #
+    #
+    #     except Exception as e:
+    #         st.error("Error reading the file: {}".format(str(e)))
+    #         st.stop()
 
     submitted = st.form_submit_button("Submit")
 
