@@ -9,7 +9,7 @@ import re
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from streamlit_tags import st_tags
+# from streamlit_tags import st_tags
 
 
 # Set Streamlit configuration
