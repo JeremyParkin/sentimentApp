@@ -10,6 +10,14 @@ client = OpenAI(api_key=st.secrets["key"])
 # Sidebar configuration
 mig.standard_sidebar()
 
+# st.write(st.session_state.highlight_keyword)
+
+original_list = st.session_state.highlight_keyword
+
+
+
+
+
 # Initialize session state variables if not already set
 if 'skipped_articles' not in st.session_state:
     st.session_state.skipped_articles = []
@@ -73,7 +81,8 @@ else:
 
         ###### HIGHLIGHTER #################
         # Define your keywords
-        keywords = [st.session_state.highlight_keyword]  # Add your keywords here
+        # keywords = ['CMA', 'Canadian Medical Association']
+        keywords = original_list  # Add your keywords here
 
         # Use the function to highlight keywords in the headline and body
         highlighted_head = highlight_keywords(head, keywords)

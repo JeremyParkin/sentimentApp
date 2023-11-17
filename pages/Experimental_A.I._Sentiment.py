@@ -111,7 +111,7 @@ analysis_note = st.text_area("Any special note on sentiment approach?", max_char
                              placeholder=analysis_placeholder, height=80)
 
 
-c1, c2, c3, c4, c5 = st.columns(5)  # Create five columns
+c1, c2, c3, c4, c5 = st.columns(5, gap="large")  # Create five columns
 
 with c1:
     sentiment_switch = st.radio("Sentiment Type", ['Simple', '3-way', '5-way'])
