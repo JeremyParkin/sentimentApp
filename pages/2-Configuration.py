@@ -9,7 +9,7 @@ import re
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-# from streamlit_tags import st_tags
+from streamlit_tags import st_tags
 
 
 # Set Streamlit configuration
@@ -96,7 +96,7 @@ else:
             highlight_keyword = st_tags(
                 label='Keywords to highlight in text (not case sensitive):',
                 text='Press enter to add more',
-                # value=['Zero', 'One', 'Two'],
+                value=[st.session_state.client_name],
                 # suggestions=['five', 'six', 'seven', 'eight', 'nine', 'three', 'eleven', 'ten', 'four'],
                 maxtags=4,
                 # key='1'
