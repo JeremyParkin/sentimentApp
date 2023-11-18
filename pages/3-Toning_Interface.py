@@ -10,13 +10,7 @@ client = OpenAI(api_key=st.secrets["key"])
 # Sidebar configuration
 mig.standard_sidebar()
 
-# st.write(st.session_state.highlight_keyword)
-
 original_list = st.session_state.highlight_keyword
-
-
-
-
 
 # Initialize session state variables if not already set
 if 'skipped_articles' not in st.session_state:
@@ -44,9 +38,7 @@ def escape_markdown(text):
     # Split text into parts (URLs and non-URLs) and process each part
     parts = re.split(r'(' + url_pattern + r')', text)
     escaped_text = ''.join(process_part(part) for part in parts)
-
     return escaped_text
-
 
 
 def highlight_keywords(text, keywords, background_color="goldenrod", text_color="black"):
@@ -79,28 +71,21 @@ else:
         count = unique_stories.iloc[counter]['Group Count']
 
 
-        ###### HIGHLIGHTER #################
         # Define your keywords
-        # keywords = ['CMA', 'Canadian Medical Association']
         keywords = original_list  # Add your keywords here
 
         # Use the function to highlight keywords in the headline and body
         highlighted_head = highlight_keywords(head, keywords)
         highlighted_body = highlight_keywords(body, keywords)
 
-        ####################################
-
 
         col1, col2 = st.columns([3, 1], gap='large')
         with col1:
             st.markdown(URL)
-            # st.markdown(f"**{highlighted_head}**", unsafe_allow_html=True)
 
             st.subheader(f"**{head}**")
             st.markdown(f"{highlighted_body}", unsafe_allow_html=True)
-            # st.write(f"{body}")
 
-            # st.dataframe(st.session_state.df_traditional)
 
         # Handle sentiment selection and navigation
         with col2:
@@ -173,7 +158,6 @@ else:
                 st.write(f"{counter}/{len(unique_stories)}")
 
 
-
         with col2:
             # Optional API call
             if st.session_state.sentiment_opinion:
@@ -200,4 +184,3 @@ else:
 
 
                 st.write(sentiment)
-

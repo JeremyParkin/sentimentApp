@@ -34,7 +34,7 @@ else:
             st.session_state.df_traditional['Assigned Sentiment'], categories=custom_order, ordered=True)
 
         # Sort the DataFrame
-        st.session_state.df_traditional.sort_values(by='Assigned Sentiment', ascending=True, inplace=True)
+        # st.session_state.df_traditional.sort_values(by='Assigned Sentiment', ascending=True, inplace=True)
 
         # Ensure all sentiments are in the dataframe (to avoid key errors in sorting)
         for sentiment in custom_order:
@@ -69,19 +69,6 @@ else:
 
             # Create the color scale
             color_scale = alt.Scale(domain=color_domain, range=color_range)
-
-
-            # Create a donut chart with percentage in the tooltip
-            # donut_chart = alt.Chart(sentiment_counts).mark_arc(innerRadius=50).encode(
-            #     theta=alt.Theta(field="Count", type="quantitative"),
-            #     color=alt.Color(field="Sentiment", type="nominal", scale=color_scale,
-            #                     sort=alt.EncodingSortField(field='Sentiment', order='ascending')),
-            #     tooltip=['Sentiment', alt.Tooltip('Percentage', format='.1f', title='Percent'), 'Count']
-            # ).properties(
-            #     title='Assigned Sentiment Distribution'
-            # )
-            #
-            # st.altair_chart(donut_chart, use_container_width=True)
 
 
             # Create the base chart for the horizontal bar chart
@@ -128,11 +115,19 @@ else:
             sentiment_stats = sentiment_counts.copy()
 
 
-            # Format the 'Percentage' column as a percentage with one decimal place
-            sentiment_stats['Percentage'] = (sentiment_stats['Percentage'] * 100).apply(lambda x: "{:.1f}%".format(x))
+            # Convert 'Sentiment' to a categorical type with the custom order
+            sentiment_counts['Sentiment'] = pd.Categorical(sentiment_counts['Sentiment'], categories=custom_order,
+                                                           ordered=True)
+
+            # Sort 'sentiment_counts' by the categorical order
+            sentiment_counts.sort_values(by='Sentiment', inplace=True)
+
+            sentiment_counts['Percentage'] = (sentiment_counts['Percentage'] * 100).apply(lambda x: "{:.1f}%".format(x))
+
 
             # Display the table without the index
-            st.dataframe(sentiment_stats.set_index('Sentiment'))
+            st.dataframe(sentiment_counts, hide_index=True,)
+
 
 
     # Create a download link for the DataFrame as an Excel file
@@ -148,6 +143,5 @@ else:
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         type='primary'
     )
-
 
     st.dataframe(st.session_state.df_traditional)
