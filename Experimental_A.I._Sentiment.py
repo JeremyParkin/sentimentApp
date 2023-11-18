@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import mig_functions as mig
-
 import json
 import replicate
 import io
@@ -14,8 +13,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 import hashlib
 import string
 import re
-
-
 
 
 
