@@ -65,11 +65,20 @@ def load_session_state(uploaded_file):
 
 st.title("Save & Load")
 
-# st.title("Save & Load")
-# #
-# #
+st.info("""**SAVE** your current data-processing session to a downloadable .pkl file
+        \n**LOAD** a previously saved data-processing session from a downloaded .pkl file""")
+
+
 st.header("Save")
-st.markdown(save_session_state(), unsafe_allow_html=True)
+
+# When this button is clicked, the save_session_state function will be executed
+if st.button("Generate Session File to Download"):
+    # Generate the download link (or any other way you handle the saving)
+    href = save_session_state()
+
+    st.markdown(href, unsafe_allow_html=True)
+
+# st.markdown(save_session_state(), unsafe_allow_html=True)
 # data = save_session_state()
 # st.download_button("Save & Download Your Session", data, type="primary")
 
