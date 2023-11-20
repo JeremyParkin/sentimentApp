@@ -13,6 +13,8 @@ mig.standard_sidebar()
 
 st.title("Getting Started")
 
+st.info("NOTE: It is strongly recommended to clear out junky mentions from your CSV before uploading.")
+
 # Initialize Session State Variables
 string_vars = {'page': '1: Getting Started', 'sentiment_type': '3-way', 'client_name': '', 'focus': '',
                'model_choice': 'GPT-3.5', 'similarity_threshold': 0.95, 'counter': 0, 'analysis_note': '', 'group_ids':'',
