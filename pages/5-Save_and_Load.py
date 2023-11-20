@@ -1,10 +1,10 @@
 import mig_functions as mig
-
 import pickle
 import base64
 import streamlit as st
 import pandas as pd
 import io
+from datetime import datetime
 
 
 
@@ -15,6 +15,9 @@ st.set_page_config(page_title="MIG Sentiment App",
 
 # Sidebar configuration
 mig.standard_sidebar()
+
+dt_string = datetime.now().strftime("%Y-%m-%d-%H-%M")
+
 
 
 def save_session_state():
@@ -35,7 +38,7 @@ def save_session_state():
     b64 = base64.b64encode(serialized_data).decode()
 
     # Generate a download link
-    href = f'<a href="data:file/pkl;base64,{b64}" download="session_state.pkl">Download Session State</a>'
+    href = f'<a href="data:file/pkl;base64,{b64}" download="{st.session_state.client_name} - {dt_string}.pkl">Download Session State</a>'
     return href
 
 
@@ -59,60 +62,25 @@ def load_session_state(uploaded_file):
 
         st.success("Session state loaded successfully!")
 
-# st.markdown(save_session_state(), unsafe_allow_html=True)
 
 st.title("Save & Load")
 
+# st.title("Save & Load")
+# #
+# #
+st.header("Save")
+st.markdown(save_session_state(), unsafe_allow_html=True)
+# data = save_session_state()
+# st.download_button("Save & Download Your Session", data, type="primary")
 
-with st.container():
-    st.header("Save")
-    st.download_button("Save & Download Your Session", save_session_state(), type="primary")
 
-    st.write("")
-    st.write("")
-    st.write("")
-    st.header("Load")
-    uploaded_file = st.file_uploader("Restore a Previous Session", type="pkl", label_visibility="hidden")
-    if uploaded_file is not None:
-        load_session_state(uploaded_file)
 
-#
-#
-# def save_session_state():
-#     # Serialize the session state directly
-#     serialized_data = pickle.dumps(st.session_state)
-#
-#     # Encode the serialized data for downloading
-#     b64 = base64.b64encode(serialized_data).decode()
-#
-#     # Generate a download button
-#     st.download_button(
-#         label="Download Session State",
-#         data=base64.b64decode(b64),
-#         file_name="session_state.pkl",
-#         mime="application/octet-stream"
-#     )
-#
-# def load_session_state(uploaded_file):
-#     if uploaded_file is not None:
-#         try:
-#             # Deserialize the session state
-#             deserialized_data = pickle.loads(uploaded_file.getvalue())
-#
-#             # Update the session state
-#             st.session_state.update(deserialized_data)
-#
-#             st.success("Session state loaded successfully!")
-#         except Exception as e:
-#             st.error(f"An error occurred while loading the session: {e}")
-#
-# # Usage in the app
-# with st.container():
-#     st.header("Save")
-#     save_session_state()  # Directly call the function here
-#
-#     st.write("")
-#     st.header("Load")
-#     uploaded_file = st.file_uploader("Restore a Previous Session", type="pkl")
-#     if uploaded_file is not None:
-#         load_session_state(uploaded_file)
+
+# st.write("")
+# st.write("")
+# st.write("")
+st.header("Load")
+uploaded_file = st.file_uploader("Upload Session State", type="pkl")
+if uploaded_file is not None:
+    load_session_state(uploaded_file)
+
