@@ -123,11 +123,11 @@ else:
 
 
 
-            analysis_placeholder = "Eg. News stories about research or academic events at DePaul are typically positive, even if the subject matter is not."
-
-            analysis_note = st.text_area("Special note on A.I. sentiment approach? ", max_chars=600, key="analysis_notes",
-                                         help="This will be added as a note in the A.I. sentiment prompt for each story.",
-                                         placeholder=analysis_placeholder, height=80)
+            # analysis_placeholder = "Eg. News stories about research or academic events at DePaul are typically positive, even if the subject matter is not."
+            #
+            # analysis_note = st.text_area("Special note on A.I. sentiment approach? ", max_chars=600, key="analysis_notes",
+            #                              help="This will be added as a note in the A.I. sentiment prompt for each story.",
+            #                              placeholder=analysis_placeholder, height=80)
 
 
 
@@ -146,7 +146,7 @@ else:
 
             st.session_state.random_sample = random_sample
             st.session_state.similarity_threshold = similarity_threshold
-            st.session_state.analysis_note = analysis_note
+            # st.session_state.analysis_note = analysis_note
             st.session_state.highlight_keyword = highlight_keyword
 
             if sentiment_type == '3-way':
@@ -154,7 +154,7 @@ else:
                 sentiment_instruction = f"""
                     Please indicate the sentiment of the following news story as it relates to {named_entity}. 
                     Start with one word: POSITIVE, NEUTRAL, or NEGATIVE - followed by a colon then a one sentence rationale 
-                    as to why that sentiment was chosen. {analysis_note}
+                    as to why that sentiment was chosen. 
                     """
 
 
@@ -163,7 +163,7 @@ else:
                 sentiment_instruction = f"""
                     Please indicate the sentiment of the following news story as it relates to {named_entity}. 
                     Start with the label: 'VERY POSITIVE', 'SOMEWHAT POSITIVE', 'NEUTRAL', 'SOMEWHAT NEGATIVE' or 'VERY NEGATIVE' - 
-                    followed by a colon then a one sentence rationale as to why that sentiment was chosen. {analysis_note}
+                    followed by a colon then a one sentence rationale as to why that sentiment was chosen. 
                     """
 
             st.session_state.sentiment_instruction = sentiment_instruction
@@ -267,7 +267,7 @@ else:
             st.session_state.sentiment_opinion = None
             st.session_state.random_sample = None
             st.session_state.similarity_threshold = None
-            st.session_state.analysis_note = None
+            # st.session_state.analysis_note = None
             st.session_state.sentiment_instruction = None
             st.session_state.df_traditional = st.session_state.full_dataset.copy()
             st.session_state.counter = 0
