@@ -108,7 +108,7 @@ else:
                 submitted = st.form_submit_button("Confirm Sentiment", type='primary')
 
             # Display group count
-            st.info(f"Impacted Stories: {count}")
+            st.info(f"Grouped Stories: {count}")
 
             if submitted:
                 # Update sentiment in DataFrame
