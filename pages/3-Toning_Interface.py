@@ -169,9 +169,13 @@ else:
                 else:
                     try:
                         story_prompt = f"\n{st.session_state.sentiment_instruction}\nThis is the news story:\n{head}\n{body}"
-                        response = client.chat.completions.create(model="gpt-3.5-turbo-1106", messages=[
-                            {"role": "system", "content": "You are a highly knowledgeable media analysis AI."},
-                            {"role": "user", "content": story_prompt}])
+
+                        response = client.chat.completions.create(
+                            model="gpt-3.5-turbo-1106",
+                            messages=[
+                                {"role": "system", "content": "You are a highly knowledgeable media analysis AI."},
+                                {"role": "user", "content": story_prompt}])
+
                         sentiment = response.choices[0].message.content.strip()
 
                         # Update the sentiment opinion in both dataframes
