@@ -42,7 +42,7 @@ if st.session_state.upload_step:
     if st.button('Start Over?'):
         for key in st.session_state.keys():
             del st.session_state[key]
-        st.experimental_rerun()
+        st.rerun()
 
 
 if not st.session_state.upload_step:
