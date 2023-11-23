@@ -97,14 +97,9 @@ else:
                 label='Keywords to highlight in text (not case sensitive):',
                 text='Press enter to add more',
                 value=[st.session_state.client_name],
-                # suggestions=['five', 'six', 'seven', 'eight', 'nine', 'three', 'eleven', 'ten', 'four'],
-                maxtags=4,
+                maxtags=10,
                 # key='1'
             )
-
-
-            # highlight_keyword = st.text_input("Highlight keyword in text (not case sensitive)", placeholder="Eg. depaul",
-            #                                   help="This will highlight the matching keyword in article text automatically.")
 
             c1, c2, c3, c4 = st.columns(4, gap="large")
             with c1:
@@ -120,14 +115,6 @@ else:
 
             with c4:
                 similarity_threshold = st.slider('Similarity level for grouping', min_value=0.85, value=0.95, max_value=1.0, help='Group articles that are the same or almost the same to be toned together.  0.85 is very similar, 1.0 is identical.')
-
-
-
-            # analysis_placeholder = "Eg. News stories about research or academic events at DePaul are typically positive, even if the subject matter is not."
-            #
-            # analysis_note = st.text_area("Special note on A.I. sentiment approach? ", max_chars=600, key="analysis_notes",
-            #                              help="This will be added as a note in the A.I. sentiment prompt for each story.",
-            #                              placeholder=analysis_placeholder, height=80)
 
 
 
@@ -258,8 +245,6 @@ else:
         st.write(f"Unique stories in sample: {len(st.session_state.unique_stories)}")
 
 
-        # st.dataframe(st.session_state.unique_stories)
-
 
         def reset_config():
             st.session_state.config_step = False
@@ -276,4 +261,4 @@ else:
         # Add reset button
         if st.button("Reset Configuration"):
             reset_config()
-            st.experimental_rerun()  # Rerun the script to reflect the reset state
+            st.rerun()  # Rerun the script to reflect the reset state

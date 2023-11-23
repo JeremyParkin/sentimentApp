@@ -12,6 +12,7 @@ st.title("Download")
 
 if not st.session_state.upload_step:
     st.error('Please upload a CSV before trying this step.')
+
 elif not st.session_state.config_step:
     st.error('Please run the configuration step before trying this step.')
 else:
@@ -130,73 +131,17 @@ else:
 
 
     # Create a download link for the DataFrame as an Excel file
-    # output = io.BytesIO()
-    # writer = pd.ExcelWriter(output, engine='xlsxwriter')
-    # st.session_state.df_traditional.to_excel(writer, sheet_name='Sheet1', index=False)
-    # writer.close()  # Use writer.close() instead of writer.save()
-    # output.seek(0)
-    # st.download_button(
-    #     label="Download sentiment Excel",
-    #     data=output,
-    #     file_name=f"{st.session_state.client_name} - {st.session_state.focus} - Sentiment.xlsx",
-    #     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    #     type='primary'
-    # )
-    #
-    # st.dataframe(st.session_state.df_traditional)
+    output = io.BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    st.session_state.df_traditional.to_excel(writer, sheet_name='Sheet1', index=False)
+    writer.close()  # Use writer.close() instead of writer.save()
+    output.seek(0)
+    st.download_button(
+        label="Download sentiment Excel",
+        data=output,
+        file_name=f"{st.session_state.client_name} - {st.session_state.focus} - Sentiment.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        type='primary'
+    )
 
-    traditional = st.session_state.df_traditional
-
-
-    # Initialize a session state variable for the download link
-    if 'download_data' not in st.session_state:
-        st.session_state.download_data = None
-
-
-    with st.form("my_form_download"):
-        st.subheader("Generate your cleaned data workbook")
-        submitted = st.form_submit_button("Go!", type="primary")
-
-        if submitted:
-            with st.spinner('Building workbook now...'):
-                output = io.BytesIO()
-                writer = pd.ExcelWriter(output, engine='xlsxwriter', datetime_format='yyyy-mm-dd')
-
-                workbook = writer.book
-
-                # Add some cell formats.
-                number_format = workbook.add_format({'num_format': '#,##0'})
-                currency_format = workbook.add_format({'num_format': '$#,##0'})
-
-                if len(traditional) > 0:
-                    traditional = traditional.sort_values(by=['Impressions'], ascending=False)
-                    traditional.to_excel(writer, sheet_name='CLEAN TRAD', startrow=1, header=False, index=False)
-                    worksheet1 = writer.sheets['CLEAN TRAD']
-                    worksheet1.set_tab_color('black')
-
-                    (max_row, max_col) = traditional.shape
-                    column_settings = [{'header': column} for column in traditional.columns]
-                    worksheet1.add_table(0, 0, max_row, max_col - 1, {'columns': column_settings})
-
-                    # Apply column-specific formats
-                    worksheet1.set_default_row(22)
-                    worksheet1.set_column('A:A', 12, None)  # datetime
-                    worksheet1.set_column('B:B', 22, None)  # outlet
-                    worksheet1.set_column('C:C', 10, None)  # type
-                    worksheet1.set_column('G:G', 12, None)  # author
-                    worksheet1.set_column('E:E', 0, None)  # mentions
-                    worksheet1.set_column('Y:Y', 12, number_format)  # impressions
-                    worksheet1.set_column('H:H', 40, None)  # headline
-                    worksheet1.set_column('X:X', 12, currency_format)  # AVE
-                    worksheet1.freeze_panes(1, 0)
-
-                workbook.close()
-                output.seek(0)  # Important: move back to the beginning of the BytesIO object
-
-                # Update the session state variable with the download data
-                st.session_state.download_data = output
-
-    # Check if the download data is ready and display the download button
-    if st.session_state.download_data is not None:
-        export_name = f"{st.session_state.client_name} - {st.session_state.focus} - Sentiment.xlsx"
-        st.download_button('Download', st.session_state.download_data, file_name=export_name, type="primary")
+    st.dataframe(st.session_state.df_traditional)

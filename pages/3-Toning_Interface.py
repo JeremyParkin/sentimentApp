@@ -6,6 +6,10 @@ import json
 import openai
 from openai import OpenAI
 client = OpenAI(api_key=st.secrets["key"])
+from deep_translator import GoogleTranslator
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+
 
 # Sidebar configuration
 mig.standard_sidebar()
@@ -54,6 +58,48 @@ def highlight_keywords(text, keywords, background_color="goldenrod", text_color=
     return highlighted_text
 
 
+
+def split_text(text, limit=700):
+    """Split text into chunks, each with a maximum length of 'limit'."""
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+    chunks = []
+    current_chunk = sentences[0]
+
+    for sentence in sentences[1:]:
+        if len(current_chunk) + len(sentence) <= limit:
+            current_chunk += " " + sentence
+        else:
+            chunks.append(current_chunk)
+            current_chunk = sentence
+    chunks.append(current_chunk)
+
+    return chunks
+
+
+
+def translate_concurrently(chunks):
+    """Translate a list of text chunks concurrently."""
+    with ThreadPoolExecutor(max_workers=30) as executor:
+        # Submit translation tasks
+        futures = [executor.submit(GoogleTranslator(source='auto', target='en').translate, chunk) for chunk in chunks]
+
+        # Collect results as they complete
+        results = []
+        for future in as_completed(futures):
+            results.append(future.result())
+
+    return results
+
+
+def translate(text):
+    """Translate text to English in chunks if it's longer than 5000 characters."""
+    chunks = split_text(text)
+    translated_chunks = translate_concurrently(chunks)
+    return " ".join(translated_chunks)
+
+
+
+
 if not st.session_state.upload_step:
     st.error('Please upload a CSV before trying this step.')
 elif not st.session_state.config_step:
@@ -62,6 +108,7 @@ else:
     counter = st.session_state.counter
     unique_stories = st.session_state.unique_stories
 
+    col1, col2 = st.columns([3, 1], gap='large')
 
     if counter < len(unique_stories):
         # Display the story
@@ -70,6 +117,19 @@ else:
         body = escape_markdown(f"{unique_stories.iloc[counter]['Snippet']}")
         count = unique_stories.iloc[counter]['Group Count']
 
+        with col2:
+            # Add a button for translation
+            if st.button('Translate to English'):
+                # Translate the headline and body
+                translated_head = translate(head)
+                translated_body = translate(body)
+
+                # Update the dataframe with translated text
+                unique_stories.at[counter, 'Translated Headline'] = translated_head
+                unique_stories.at[counter, 'Translated Body'] = translated_body
+
+                # Update the display with translated text
+                head, body = translated_head, translated_body
 
         # Define your keywords
         keywords = original_list  # Add your keywords here
@@ -79,7 +139,6 @@ else:
         highlighted_body = highlight_keywords(body, keywords)
 
 
-        col1, col2 = st.columns([3, 1], gap='large')
         with col1:
             st.markdown(URL)
 
