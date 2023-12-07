@@ -64,22 +64,6 @@ def highlight_keywords(text, keywords, background_color="goldenrod", text_color=
 
 
 
-# def split_text(text, limit=700):
-#     """Split text into chunks, each with a maximum length of 'limit'."""
-#     sentences = re.split(r'(?<=[.!?])\s+', text)
-#     chunks = []
-#     current_chunk = sentences[0]
-#
-#     for sentence in sentences[1:]:
-#         if len(current_chunk) + len(sentence) <= limit:
-#             current_chunk += " " + sentence
-#         else:
-#             chunks.append(current_chunk)
-#             current_chunk = sentence
-#     chunks.append(current_chunk)
-#
-#     return chunks
-
 
 def split_text(text, limit=700, sentence_limit=350):
     """Split text into chunks, each with a maximum length of 'limit', further splitting long sentences."""
@@ -108,22 +92,6 @@ def split_text(text, limit=700, sentence_limit=350):
 
     return chunks
 
-
-
-
-
-# def translate_concurrently(chunks):
-#     """Translate a list of text chunks concurrently."""
-#     with ThreadPoolExecutor(max_workers=30) as executor:
-#         # Submit translation tasks
-#         futures = [executor.submit(GoogleTranslator(source='auto', target='en').translate, chunk) for chunk in chunks]
-#
-#         # Collect results as they complete
-#         results = []
-#         for future in as_completed(futures):
-#             results.append(future.result())
-#
-#     return results
 
 
 
@@ -267,10 +235,10 @@ else:
             with progress:
                 assigned_articles_count = st.session_state.df_traditional['Assigned Sentiment'].notna().sum()
                 percent_done = assigned_articles_count / len(st.session_state.df_traditional)
-                st.metric("Percent done", "{:.1%}".format(percent_done), "")
+                st.metric("Total done", "{:.1%}".format(percent_done), "")
 
             with numbers:
-                st.write("Story")
+                st.write("Unique story")
                 st.write(f"{counter}/{len(unique_stories)}")
 
 
