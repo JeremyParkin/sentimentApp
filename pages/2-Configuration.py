@@ -103,12 +103,12 @@ else:
 
             c1, c2, c3, c4 = st.columns(4, gap="large")
             with c1:
-                random_sample = st.radio('Toning sample?', ['Yes', 'No', ],help="Get a statistically significant random sample based on your uploaded data set.")
+                random_sample = st.radio('Toning sample?', ['Yes, take a sample', 'No, use full data', ],help="Get a statistically significant random sample based on your uploaded data set.")
 
             with c2:
                 sentiment_opinion_selector = st.radio(
                     "A.I. sentiment opinions?", ('No thanks', 'Yes please',),
-                    key='opinion_choice', help='Get ChatGPT sentiment suggestions based on the article and client brand.')
+                    key='opinion_choice', help='Get GPT sentiment suggestions based on the article and client brand.')
 
             with c3:
                 sentiment_type = st.radio("Sentiment Type", ['3-way', '5-way'], help='3-way is the standard approach.  5-way insteade uses *very positive*, *somewhat positive*, *neutral*, etc.')
@@ -155,7 +155,7 @@ else:
 
             st.session_state.sentiment_instruction = sentiment_instruction
 
-            if random_sample == 'Yes':
+            if random_sample == 'Yes, take a sample':
                 def calculate_sample_size(N, confidence_level=0.95, margin_of_error=0.05, p=0.5):
                     # Z-score for 95% confidence level
                     Z = 1.96  # 95% confidence

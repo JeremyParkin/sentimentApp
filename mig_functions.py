@@ -1,8 +1,5 @@
 import streamlit as st
 
-st.set_page_config(layout="wide", page_title="MIG Sentiment App",
-                   page_icon="https://www.agilitypr.com/wp-content/uploads/2018/02/favicon-192.png")
-
 
 def standard_sidebar():
     import streamlit as st

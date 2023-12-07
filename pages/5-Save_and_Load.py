@@ -64,12 +64,13 @@ def load_session_state(uploaded_file):
 
 
 st.title("Save & Load")
+# st.info("""**SAVE** your current data-processing session to a downloadable .pkl file
+#         \n**LOAD** a previously saved data-processing session from a downloaded .pkl file""")
 
-st.info("""**SAVE** your current data-processing session to a downloadable .pkl file
-        \n**LOAD** a previously saved data-processing session from a downloaded .pkl file""")
 
 
 st.header("Save")
+st.info("**SAVE** your current data-processing session to a downloadable .pkl file")
 
 # When this button is clicked, the save_session_state function will be executed
 if st.button("Generate Session File to Download"):
@@ -83,12 +84,13 @@ if st.button("Generate Session File to Download"):
 # st.download_button("Save & Download Your Session", data, type="primary")
 
 
-
+st.divider()
 
 # st.write("")
 # st.write("")
 # st.write("")
 st.header("Load")
+st.info("**LOAD** a previously saved data-processing session from a downloaded .pkl file")
 uploaded_file = st.file_uploader("Upload Session State", type="pkl")
 if uploaded_file is not None:
     load_session_state(uploaded_file)
