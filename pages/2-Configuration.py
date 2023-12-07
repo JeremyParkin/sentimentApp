@@ -18,6 +18,7 @@ st.set_page_config(page_title="MIG Sentiment Tool",
                    layout="wide")
 
 
+st.session_state.current_page = 'Configuration'
 
 # Sidebar configuration
 mig.standard_sidebar()

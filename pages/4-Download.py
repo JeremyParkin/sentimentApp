@@ -16,6 +16,13 @@ mig.standard_sidebar()
 
 st.title("Download")
 
+
+if st.session_state.get('current_page') != 'Download':
+    st.session_state.download_data = None
+
+
+st.session_state.current_page = 'Download'
+
 if not st.session_state.upload_step:
     st.error('Please upload a CSV before trying this step.')
 elif not st.session_state.config_step:

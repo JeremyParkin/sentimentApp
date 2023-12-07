@@ -17,6 +17,8 @@ st.set_page_config(page_title="MIG Sentiment Tool",
 # Sidebar configuration
 mig.standard_sidebar()
 
+st.session_state.current_page = 'Toning Interface'
+
 original_list = st.session_state.highlight_keyword
 
 # Initialize session state variables if not already set

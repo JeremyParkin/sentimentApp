@@ -18,7 +18,7 @@ st.info("RECOMMENDATION: Clear out junky mentions from your CSV before uploading
 # Initialize Session State Variables
 string_vars = {'page': '1: Getting Started', 'sentiment_type': '3-way', 'client_name': '', 'focus': '',
                'model_choice': 'GPT-3.5', 'similarity_threshold': 0.95, 'counter': 0, 'analysis_note': '', 'group_ids':'',
-               'sample_size': 0, 'highlight_keyword':''}
+               'sample_size': 0, 'highlight_keyword':'', 'current_page': 'Getting Started'}
 for key, value in string_vars.items():
     if key not in st.session_state:
         st.session_state[key] = value
@@ -33,6 +33,7 @@ for _ in bool_vars:
     if _ not in st.session_state:
         st.session_state[_] = False
 
+st.session_state.current_page = 'Getting Started'
 
 
 if st.session_state.upload_step:

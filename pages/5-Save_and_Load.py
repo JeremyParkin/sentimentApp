@@ -16,6 +16,8 @@ st.set_page_config(page_title="MIG Sentiment App",
 # Sidebar configuration
 mig.standard_sidebar()
 
+st.session_state.current_page = 'Save and Load'
+
 dt_string = datetime.now().strftime("%Y-%m-%d-%H-%M")
 
 
@@ -68,6 +70,7 @@ st.title("Save & Load")
 #         \n**LOAD** a previously saved data-processing session from a downloaded .pkl file""")
 
 
+st.divider()
 
 st.header("Save")
 st.info("**SAVE** your current data-processing session to a downloadable .pkl file")
