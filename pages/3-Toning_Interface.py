@@ -62,36 +62,88 @@ def highlight_keywords(text, keywords, background_color="goldenrod", text_color=
 
 
 
-def split_text(text, limit=700):
-    """Split text into chunks, each with a maximum length of 'limit'."""
+# def split_text(text, limit=700):
+#     """Split text into chunks, each with a maximum length of 'limit'."""
+#     sentences = re.split(r'(?<=[.!?])\s+', text)
+#     chunks = []
+#     current_chunk = sentences[0]
+#
+#     for sentence in sentences[1:]:
+#         if len(current_chunk) + len(sentence) <= limit:
+#             current_chunk += " " + sentence
+#         else:
+#             chunks.append(current_chunk)
+#             current_chunk = sentence
+#     chunks.append(current_chunk)
+#
+#     return chunks
+
+
+def split_text(text, limit=700, sentence_limit=350):
+    """Split text into chunks, each with a maximum length of 'limit', further splitting long sentences."""
     sentences = re.split(r'(?<=[.!?])\s+', text)
     chunks = []
-    current_chunk = sentences[0]
+    current_chunk = ''
 
-    for sentence in sentences[1:]:
+    for sentence in sentences:
+        # Split long sentences further
+        while len(sentence) > sentence_limit:
+            part, sentence = sentence[:sentence_limit], sentence[sentence_limit:]
+            if current_chunk:
+                chunks.append(current_chunk)
+                current_chunk = part
+            else:
+                current_chunk = part
+
         if len(current_chunk) + len(sentence) <= limit:
             current_chunk += " " + sentence
         else:
             chunks.append(current_chunk)
             current_chunk = sentence
-    chunks.append(current_chunk)
+
+    if current_chunk:
+        chunks.append(current_chunk)
 
     return chunks
 
 
 
-def translate_concurrently(chunks):
-    """Translate a list of text chunks concurrently."""
-    with ThreadPoolExecutor(max_workers=30) as executor:
-        # Submit translation tasks
-        futures = [executor.submit(GoogleTranslator(source='auto', target='en').translate, chunk) for chunk in chunks]
 
-        # Collect results as they complete
-        results = []
-        for future in as_completed(futures):
-            results.append(future.result())
+
+# def translate_concurrently(chunks):
+#     """Translate a list of text chunks concurrently."""
+#     with ThreadPoolExecutor(max_workers=30) as executor:
+#         # Submit translation tasks
+#         futures = [executor.submit(GoogleTranslator(source='auto', target='en').translate, chunk) for chunk in chunks]
+#
+#         # Collect results as they complete
+#         results = []
+#         for future in as_completed(futures):
+#             results.append(future.result())
+#
+#     return results
+
+
+
+def translate_concurrently(chunks):
+    """Translate a list of text chunks concurrently, preserving the order."""
+    with ThreadPoolExecutor(max_workers=30) as executor:
+        # Submit translation tasks with indices
+        future_to_index = {executor.submit(GoogleTranslator(source='auto', target='en').translate, chunk): i for i, chunk in enumerate(chunks)}
+
+        # Collect results in order of submission
+        results = [None] * len(chunks)
+        for future in as_completed(future_to_index):
+            index = future_to_index[future]
+            try:
+                results[index] = future.result()
+            except Exception as e:
+                # Handle exceptions, e.g., log them or use a placeholder
+                results[index] = f"Error: {e}"
 
     return results
+
+
 
 
 def translate(text):
