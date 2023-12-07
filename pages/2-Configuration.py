@@ -108,14 +108,14 @@ else:
 
             with c2:
                 sentiment_opinion_selector = st.radio(
-                    "A.I. sentiment opinions?", ('No thanks', 'Yes please',),
+                    "A.I. sentiment opinions?", ('Yes please', 'No thanks',),
                     key='opinion_choice', help='Get GPT sentiment suggestions based on the article and client brand.')
 
             with c3:
                 sentiment_type = st.radio("Sentiment Type", ['3-way', '5-way'], help='3-way is the standard approach.  5-way insteade uses *very positive*, *somewhat positive*, *neutral*, etc.')
 
             with c4:
-                similarity_threshold = st.slider('Similarity level for grouping', min_value=0.85, value=0.95, max_value=1.0, help='Group articles that are the same or almost the same to be toned together.  0.85 is very similar, 1.0 is identical.')
+                similarity_threshold = st.slider('Similarity level for grouping', min_value=0.85, value=0.9, max_value=1.0, help='Group articles that are the same or almost the same to be toned together.  0.85 is very similar, 1.0 is identical.')
 
 
 
