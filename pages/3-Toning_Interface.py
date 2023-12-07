@@ -238,8 +238,10 @@ else:
                 st.metric("Total done", "{:.1%}".format(percent_done), "")
 
             with numbers:
-                st.write("Unique story")
-                st.write(f"{counter}/{len(unique_stories)}")
+                st.metric("Unique story", f"{counter}/{len(unique_stories)}", "")
+
+                # st.write("Unique story")
+                # st.write(f"**{counter}/{len(unique_stories)}**")
 
 
         with col2:
