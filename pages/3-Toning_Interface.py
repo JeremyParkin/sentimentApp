@@ -190,7 +190,6 @@ else:
                     head, body = translated_head, translated_body
 
             with button2:
-
                 current_group_id = st.session_state.filtered_stories.iloc[counter]['Group ID']
 
                 # Add buttons to flag / unflag story for review
@@ -203,6 +202,9 @@ else:
                                                                 'Group ID'] == current_group_id, 'Flagged for Review'] = True
                         st.session_state.unique_stories.loc[st.session_state.unique_stories[
                                                                 'Group ID'] == current_group_id, 'Flagged for Review'] = True
+                        st.session_state.filtered_stories.loc[st.session_state.filtered_stories[
+                                                                  'Group ID'] == current_group_id, 'Flagged for Review'] = True
+
                         st.rerun()
 
                 if flagged_status == True:
@@ -211,6 +213,9 @@ else:
                                                                 'Group ID'] == current_group_id, 'Flagged for Review'] = False
                         st.session_state.unique_stories.loc[st.session_state.unique_stories[
                                                                 'Group ID'] == current_group_id, 'Flagged for Review'] = False
+                        st.session_state.filtered_stories.loc[st.session_state.filtered_stories[
+                                                                  'Group ID'] == current_group_id, 'Flagged for Review'] = False
+
                         st.rerun()
 
         # Define your keywords
