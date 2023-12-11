@@ -315,11 +315,6 @@ else:
 
             with numbers:
 
-                # if st.session_state.view_flagged_only:
-                #     total_stories = (st.session_state.unique_stories['Flagged for Review'] == True).sum()
-                # else:
-                #     total_stories = len(st.session_state.unique_stories)
-
                 if st.session_state.view_flagged_only:
                     counter = st.session_state.filtered_counter
                     total_stories = (st.session_state.unique_stories['Flagged for Review'] == True).sum()
@@ -370,7 +365,6 @@ else:
 
                         # Update the placeholder with the sentiment opinion
                         sentiment_placeholder.write(sentiment)
-                        # st.rerun()
 
                     except Exception as e:
                         st.error(f"An unexpected error occurred: {e}")
@@ -385,7 +379,7 @@ else:
 
     else:
         st.info("You have reached the end of the stories.")
-        st.rerun()
+        # st.rerun()
 
         if counter + 1 == total_stories:
 
