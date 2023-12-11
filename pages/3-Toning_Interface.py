@@ -30,7 +30,7 @@ if st.session_state.view_flagged_only:
             st.session_state.unique_stories['Flagged for Review'] == True].copy()
     else:
         st.info('No stories flagged for review yet.  Please disable the "Review Flagged" toggle to see all stories.')
-        st.session_state.view_flagged_only = st.sidebar.toggle('Review Flagged')
+        st.session_state.view_flagged_only = False
         st.stop()
 
 else:
