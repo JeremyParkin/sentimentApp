@@ -142,21 +142,8 @@ else:
 
 
 
-    # Create a download link for the DataFrame as an Excel file
-    # output = io.BytesIO()
-    # writer = pd.ExcelWriter(output, engine='xlsxwriter')
-    # st.session_state.df_traditional.to_excel(writer, sheet_name='Sheet1', index=False)
-    # writer.close()  # Use writer.close() instead of writer.save()
-    # output.seek(0)
-    # st.download_button(
-    #     label="Download sentiment Excel",
-    #     data=output,
-    #     file_name=f"{st.session_state.client_name} - {st.session_state.focus} - Sentiment.xlsx",
-    #     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    #     type='primary'
-    # )
-    #
-    # st.dataframe(st.session_state.df_traditional)
+    with st.expander('View Processed Data'):
+        st.dataframe(st.session_state.df_traditional)
 
     traditional = st.session_state.df_traditional
 
@@ -193,15 +180,41 @@ else:
 
                     # Apply column-specific formats
                     worksheet1.set_default_row(22)
-                    worksheet1.set_column('A:A', 12, None)  # datetime
-                    worksheet1.set_column('B:B', 22, None)  # outlet
-                    worksheet1.set_column('C:C', 10, None)  # type
+                    worksheet1.set_column('A:A', 12, None)  # date
+                    worksheet1.set_column('B:B', 12, None)  # time
+                    worksheet1.set_column('C:C', 12, None)  # timezone
                     worksheet1.set_column('G:G', 12, None)  # author
-                    worksheet1.set_column('E:E', 0, None)  # mentions
-                    worksheet1.set_column('Y:Y', 12, number_format)  # impressions
                     worksheet1.set_column('H:H', 40, None)  # headline
+                    worksheet1.set_column('Y:Y', 12, number_format)  # impressions
                     worksheet1.set_column('X:X', 12, currency_format)  # AVE
+                    worksheet1.set_column('AH:AH', 12, None)  # Assigned Sentiment
+                    worksheet1.set_column('AI:AI', 12, None)  # Flagged
+                    worksheet1.set_column('AJ:AJ', 12, None)  # Group ID
                     worksheet1.freeze_panes(1, 0)
+
+                    # Add another worksheet with st.session_state.full_dataset called 'RAW DATA'
+                    raw_data = st.session_state.full_dataset
+                    raw_data.to_excel(writer, sheet_name='RAW DATA', startrow=1, header=False, index=False)
+                    worksheet2 = writer.sheets['RAW DATA']
+                    # worksheet2.set_tab_color('grey')
+
+                    (max_row, max_col) = raw_data.shape
+                    column_settings = [{'header': column} for column in raw_data.columns]
+                    worksheet2.add_table(0, 0, max_row, max_col - 1, {'columns': column_settings})
+
+
+                    # Apply column-specific formats to the 'RAW DATA' worksheet
+                    # (Modify this part based on the structure of your raw data)
+                    worksheet2.set_default_row(22)
+                    worksheet2.set_column('A:A', 12, None)  # date
+                    worksheet2.set_column('B:B', 12, None)  # time
+                    worksheet2.set_column('C:C', 10, None)  # timezone
+                    worksheet2.set_column('G:G', 12, None)  # author
+                    worksheet2.set_column('H:H', 40, None)  # headline
+                    worksheet2.set_column('Y:Y', 12, number_format)  # impressions
+                    worksheet2.set_column('X:X', 12, currency_format)  # AVE
+                    worksheet2.freeze_panes(1, 0)
+
 
                 workbook.close()
                 output.seek(0)  # Important: move back to the beginning of the BytesIO object

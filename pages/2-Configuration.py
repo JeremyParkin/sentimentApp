@@ -84,6 +84,14 @@ def identify_duplicates(similarity_matrix):
 
 
 
+def clean_snippet(snippet):
+    if snippet.startswith(">>>"):
+        return snippet.replace(">>>", "", 1)
+    else:
+        return snippet
+
+
+
 st.title("Configuration")
 if not st.session_state.upload_step:
     st.error('Please upload a CSV before trying this step.')
@@ -134,7 +142,6 @@ else:
 
             st.session_state.random_sample = random_sample
             st.session_state.similarity_threshold = similarity_threshold
-            # st.session_state.analysis_note = analysis_note
             st.session_state.highlight_keyword = highlight_keyword
 
             if sentiment_type == '3-way':
@@ -155,6 +162,15 @@ else:
                     """
 
             st.session_state.sentiment_instruction = sentiment_instruction
+
+            if 'Assigned Sentiment' not in st.session_state.df_traditional.columns:
+                st.session_state.df_traditional['Assigned Sentiment'] = pd.NA
+
+            if 'Flagged for Review' not in st.session_state.df_traditional.columns:
+                st.session_state.df_traditional['Flagged for Review'] = False
+
+            st.session_state.df_traditional = st.session_state.df_traditional.dropna(thresh=3)
+
 
             if random_sample == 'Yes, take a sample':
                 def calculate_sample_size(N, confidence_level=0.95, margin_of_error=0.05, p=0.5):
@@ -199,6 +215,7 @@ else:
 
             df['Headline'] = df['Headline'].apply(remove_extra_spaces)
             df['Snippet'] = df['Snippet'].apply(remove_extra_spaces)
+            df['Snippet'] = df['Snippet'].apply(clean_snippet)
             df['Normalized Headline'] = df['Headline'].apply(normalize_text)
             df['Normalized Snippet'] = df['Snippet'].apply(normalize_text)
 
@@ -253,7 +270,6 @@ else:
             st.session_state.sentiment_opinion = None
             st.session_state.random_sample = None
             st.session_state.similarity_threshold = None
-            # st.session_state.analysis_note = None
             st.session_state.sentiment_instruction = None
             st.session_state.df_traditional = st.session_state.full_dataset.copy()
             st.session_state.counter = 0

@@ -13,7 +13,7 @@ mig.standard_sidebar()
 
 st.title("Getting Started")
 
-st.info("RECOMMENDATION: Clear out junky mentions from your CSV before uploading.")
+
 
 # Initialize Session State Variables
 string_vars = {'page': '1: Getting Started', 'sentiment_type': '3-way', 'client_name': '', 'focus': '',
@@ -38,7 +38,8 @@ st.session_state.current_page = 'Getting Started'
 
 if st.session_state.upload_step:
     st.success('File uploaded.')
-    st.dataframe(st.session_state.df_traditional)
+    with st.expander('Uploaded File Preview'):
+        st.dataframe(st.session_state.df_traditional)
 
     if st.button('Start Over?'):
         for key in st.session_state.keys():
@@ -47,6 +48,7 @@ if st.session_state.upload_step:
 
 
 if not st.session_state.upload_step:
+    st.info("RECOMMENDATION: Clear out junky mentions from your CSV before uploading.")
 
     with st.form('User Inputs'):
         client = st.text_input('Client organization name*', placeholder='eg. Air Canada', key='client',
@@ -66,18 +68,16 @@ if not st.session_state.upload_step:
     elif submitted:
         with st.spinner("Converting file format."):
             st.session_state.df_traditional = pd.read_csv(uploaded_file)
-            st.session_state.df_traditional = st.session_state.df_traditional.dropna(thresh=3)
-            # st.session_state.df_traditional["Mentions"] = 1
-            if 'Assigned Sentiment' not in st.session_state.df_traditional.columns:
-                st.session_state.df_traditional['Assigned Sentiment'] = pd.NA  # Initialize with NA values
+
+            st.session_state.full_dataset = st.session_state.df_traditional.copy()
 
             st.session_state.client_name = client
             st.session_state.focus = focus
 
-            st.dataframe(st.session_state.df_traditional)
+            with st.expander('Uploaded File Preview'):
+                st.dataframe(st.session_state.df_traditional)
 
             st.session_state.df_traditional.rename(columns={"Coverage Snippet": "Snippet"}, inplace=True)
-            st.session_state.full_dataset = st.session_state.df_traditional.copy()
 
             st.session_state.upload_step = True
             st.rerun()

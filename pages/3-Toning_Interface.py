@@ -2,8 +2,7 @@ import streamlit as st
 import pandas as pd
 import mig_functions as mig
 import re
-import json
-import openai
+# import openai
 from openai import OpenAI
 client = OpenAI(api_key=st.secrets["key"])
 from deep_translator import GoogleTranslator
@@ -14,6 +13,30 @@ st.set_page_config(page_title="MIG Sentiment Tool",
                    page_icon="https://www.agilitypr.com/wp-content/uploads/2018/02/favicon-192.png",
                    layout="wide")
 
+# Initialize session state variables if not already set
+if 'view_flagged_only' not in st.session_state:
+    st.session_state.view_flagged_only = False
+
+if 'filtered_counter' not in st.session_state:
+    st.session_state.filtered_counter = 0
+
+
+
+# Filter the DataFrame based on the review toggle state
+if st.session_state.view_flagged_only:
+    # Check if there are any flagged stories
+    if (st.session_state.unique_stories['Flagged for Review'] == True).any():
+        st.session_state.filtered_stories = st.session_state.unique_stories[
+            st.session_state.unique_stories['Flagged for Review'] == True].copy()
+    else:
+        st.info('No stories flagged for review yet.  Please disable the "Review Flagged" toggle to see all stories.')
+        st.stop()
+
+else:
+    st.session_state.filtered_stories = st.session_state.unique_stories.copy()
+
+
+
 # Sidebar configuration
 mig.standard_sidebar()
 
@@ -21,11 +44,10 @@ st.session_state.current_page = 'Toning Interface'
 
 original_list = st.session_state.highlight_keyword
 
-# Initialize session state variables if not already set
-if 'skipped_articles' not in st.session_state:
-    st.session_state.skipped_articles = []
 
 
+
+# Function to escape markdown characters in a text part
 def escape_markdown(text):
     markdown_special_chars = r"\`*_{}[]()#+-.!$"
 
@@ -94,7 +116,6 @@ def split_text(text, limit=700, sentence_limit=350):
 
 
 
-
 def translate_concurrently(chunks):
     """Translate a list of text chunks concurrently, preserving the order."""
     with ThreadPoolExecutor(max_workers=30) as executor:
@@ -115,7 +136,6 @@ def translate_concurrently(chunks):
 
 
 
-
 def translate(text):
     """Translate text to English in chunks if it's longer than 5000 characters."""
     chunks = split_text(text)
@@ -124,37 +144,71 @@ def translate(text):
 
 
 
-
 if not st.session_state.upload_step:
+    st.title("Toning Interface")
     st.error('Please upload a CSV before trying this step.')
 elif not st.session_state.config_step:
+    st.title("Toning Interface")
     st.error('Please run the configuration step before trying this step.')
 else:
-    counter = st.session_state.counter
-    unique_stories = st.session_state.unique_stories
+    # Add a toggle to the sidebar
+    st.session_state.view_flagged_only = st.sidebar.toggle('Review Flagged')
+
+    # Use the appropriate counter depending on the view
+    if st.session_state.view_flagged_only:
+        counter = st.session_state.filtered_counter
+    else:
+        counter = st.session_state.counter
+
 
     col1, col2 = st.columns([3, 1], gap='large')
 
-    if counter < len(unique_stories):
+    if counter < len(st.session_state.filtered_stories):
         # Display the story
-        URL = f"{unique_stories.iloc[counter]['URL']}"
-        head = escape_markdown(f"{unique_stories.iloc[counter]['Headline']}")
-        body = escape_markdown(f"{unique_stories.iloc[counter]['Snippet']}")
-        count = unique_stories.iloc[counter]['Group Count']
+        URL = f"{st.session_state.filtered_stories.iloc[counter]['URL']}"
+        head = escape_markdown(f"{st.session_state.filtered_stories.iloc[counter]['Headline']}")
+        body = escape_markdown(f"{st.session_state.filtered_stories.iloc[counter]['Snippet']}")
+        count = st.session_state.filtered_stories.iloc[counter]['Group Count']
 
         with col2:
-            # Add a button for translation
-            if st.button('Translate to English'):
-                # Translate the headline and body
-                translated_head = translate(head)
-                translated_body = translate(body)
+            button1, button2 = st.columns(2)
+            with button1:
+                # Add a button for translation
+                if st.button('Translate'):
+                    # Translate the headline and body
+                    translated_head = translate(head)
+                    translated_body = translate(body)
 
-                # Update the dataframe with translated text
-                unique_stories.at[counter, 'Translated Headline'] = translated_head
-                unique_stories.at[counter, 'Translated Body'] = translated_body
+                    # Update the dataframe with translated text
+                    st.session_state.filtered_stories.at[counter, 'Translated Headline'] = translated_head
+                    st.session_state.filtered_stories.at[counter, 'Translated Body'] = translated_body
 
-                # Update the display with translated text
-                head, body = translated_head, translated_body
+                    # Update the display with translated text
+                    head, body = translated_head, translated_body
+
+            with button2:
+
+                current_group_id = st.session_state.filtered_stories.iloc[counter]['Group ID']
+
+                # Add buttons to flag / unflag story for review
+                flagged_status = st.session_state.df_traditional.loc[
+                    st.session_state.df_traditional['Group ID'] == current_group_id, 'Flagged for Review'].iloc[0]
+
+                if flagged_status == False:
+                    if st.button('Flag'):
+                        st.session_state.df_traditional.loc[st.session_state.df_traditional[
+                                                                'Group ID'] == current_group_id, 'Flagged for Review'] = True
+                        st.session_state.unique_stories.loc[st.session_state.unique_stories[
+                                                                'Group ID'] == current_group_id, 'Flagged for Review'] = True
+                        st.rerun()
+
+                if flagged_status == True:
+                    if st.button('Unflag'):
+                        st.session_state.df_traditional.loc[st.session_state.df_traditional[
+                                                                'Group ID'] == current_group_id, 'Flagged for Review'] = False
+                        st.session_state.unique_stories.loc[st.session_state.unique_stories[
+                                                                'Group ID'] == current_group_id, 'Flagged for Review'] = False
+                        st.rerun()
 
         # Define your keywords
         keywords = original_list  # Add your keywords here
@@ -164,20 +218,19 @@ else:
         highlighted_body = highlight_keywords(body, keywords)
 
 
+
         with col1:
             st.markdown(URL)
-
             st.subheader(f"**{head}**")
             st.markdown(f"{highlighted_body}", unsafe_allow_html=True)
 
 
         # Handle sentiment selection and navigation
         with col2:
+
             # Check if sentiment has already been assigned
-            current_group_id = unique_stories.iloc[counter]['Group ID']
             assigned_sentiment = st.session_state.df_traditional.loc[
                 st.session_state.df_traditional['Group ID'] == current_group_id, 'Assigned Sentiment'].iloc[0]
-
 
             if pd.notna(assigned_sentiment):
                 st.info(f"Assigned Sentiment: {assigned_sentiment}")
@@ -185,51 +238,66 @@ else:
             with st.form("Sentiment Selector"):
                 # Sentiment selection radio buttons
                 if st.session_state.sentiment_type == '3-way':
-                    sentiment_choice = st.radio("Sentiment Choice", ['POSITIVE', 'NEUTRAL', 'NEGATIVE', 'NOT RELEVANT'])
+                    sentiment_choice = st.radio("Sentiment Choice", ['POSITIVE', 'NEUTRAL', 'NEGATIVE', 'NOT RELEVANT'], index=1,)
                 else:
-                    sentiment_choice = st.radio("Sentiment Choice", ['VERY POSITIVE', 'SOMEWHAT POSITIVE', 'NEUTRAL', 'SOMEWHAT NEGATIVE', 'VERY NEGATIVE', 'NOT RELEVANT'])
+                    sentiment_choice = st.radio("Sentiment Choice", ['VERY POSITIVE', 'SOMEWHAT POSITIVE', 'NEUTRAL', 'SOMEWHAT NEGATIVE', 'VERY NEGATIVE', 'NOT RELEVANT'], index=2, )
 
-                submitted = st.form_submit_button("Confirm Sentiment", type='primary')
+
+                submitted = st.form_submit_button("Confirm Sentiment", type='primary', )
+
+
 
             # Display group count
             st.info(f"Grouped Stories: {count}")
 
             if submitted:
+
                 # Update sentiment in DataFrame
-                current_group_id = unique_stories.iloc[counter]['Group ID']
+                current_group_id = st.session_state.filtered_stories.iloc[counter]['Group ID']
+
                 st.session_state.df_traditional.loc[st.session_state.df_traditional[
                                                         'Group ID'] == current_group_id, 'Assigned Sentiment'] = sentiment_choice
 
-                # Find next unassigned article
-                next_unassigned_idx = None
-                for i in range(counter + 1, len(unique_stories)):
-                    group_id = unique_stories.iloc[i]['Group ID']
-                    if pd.isna(st.session_state.df_traditional.loc[
-                                   st.session_state.df_traditional['Group ID'] == group_id, 'Assigned Sentiment'].iloc[
-                                   0]):
-                        next_unassigned_idx = i
-                        break
 
-                if next_unassigned_idx is not None:
-                    st.session_state.counter = next_unassigned_idx
+                # Go to the next article
+                if st.session_state.view_flagged_only:
+                    st.session_state.filtered_counter = min(len(st.session_state.filtered_stories) - 1,
+                                                            st.session_state.filtered_counter + 1)
                 else:
-                    st.success("All articles have been assigned a sentiment.")
+                    st.session_state.counter = min(len(st.session_state.filtered_stories) - 1,
+                                                   st.session_state.counter + 1)
 
                 st.rerun()
 
 
+
             # Navigation buttons
             prev_button, next_button = st.columns(2)
-            with prev_button:
-                if st.button('Back'):
-                    st.session_state.counter = max(0, st.session_state.counter - 1)
-                    st.rerun()
 
+            # Update the appropriate counter when a button is clicked
+            if st.session_state.view_flagged_only:
+                with prev_button:
+                    if st.button('Back', disabled=(st.session_state.filtered_counter == 0)):
+                        st.session_state.filtered_counter = max(0, st.session_state.filtered_counter - 1)
+                        st.rerun()
 
-            with next_button:
-                if st.button('Next'):
-                    st.session_state.counter = min(len(unique_stories) - 1, st.session_state.counter + 1)
-                    st.rerun()
+                with next_button:
+                    if st.button('Next', disabled=(st.session_state.filtered_counter == len(st.session_state.filtered_stories) - 1)):
+                        st.session_state.filtered_counter = min(len(st.session_state.filtered_stories) - 1,
+                                                                st.session_state.filtered_counter + 1)
+                        st.rerun()
+            else:
+                with prev_button:
+                    if st.button('Back', disabled=(st.session_state.counter == 0)):
+                        st.session_state.counter = max(0, st.session_state.counter - 1)
+                        st.rerun()
+
+                with next_button:
+                    if st.button('Next', disabled=(st.session_state.counter == len(st.session_state.filtered_stories) - 1)):
+                        st.session_state.counter = min(len(st.session_state.filtered_stories) - 1,
+                                                       st.session_state.counter + 1)
+                        st.rerun()
+
 
             numbers, progress = st.columns(2)
             with progress:
@@ -238,22 +306,41 @@ else:
                 st.metric("Total done", "{:.1%}".format(percent_done), "")
 
             with numbers:
-                st.metric("Unique story", f"{counter}/{len(unique_stories)}", "")
 
-                # st.write("Unique story")
-                # st.write(f"**{counter}/{len(unique_stories)}**")
+                # if st.session_state.view_flagged_only:
+                #     total_stories = (st.session_state.unique_stories['Flagged for Review'] == True).sum()
+                # else:
+                #     total_stories = len(st.session_state.unique_stories)
+
+                if st.session_state.view_flagged_only:
+                    counter = st.session_state.filtered_counter
+                    total_stories = (st.session_state.unique_stories['Flagged for Review'] == True).sum()
+                else:
+                    counter = st.session_state.counter
+                    total_stories = len(st.session_state.unique_stories)
+                st.metric("Unique story", f"{counter + 1}/{total_stories}", "")
+
 
 
         with col2:
             # Optional API call
             if st.session_state.sentiment_opinion:
-                current_group_id = unique_stories.iloc[counter]['Group ID']
+                current_group_id = st.session_state.filtered_stories.iloc[counter]['Group ID']
+
+                # Create a placeholder for the sentiment opinion
+                sentiment_placeholder = st.empty()
+
 
                 # Check if the response for this story is already stored or exists in the dataframe
-                if pd.notna(unique_stories.iloc[counter]['Sentiment Opinion']):
-                    sentiment = unique_stories.iloc[counter]['Sentiment Opinion']
+                if pd.notna(st.session_state.filtered_stories.iloc[counter]['Sentiment Opinion']):
+                    sentiment = st.session_state.filtered_stories.iloc[counter]['Sentiment Opinion']
+                    sentiment_placeholder.write(sentiment)
+
                 else:
                     try:
+                        # Display a loading message
+                        sentiment_placeholder.info('Generating sentiment opinion...')
+
                         story_prompt = f"\n{st.session_state.sentiment_instruction}\nThis is the news story:\n{head}\n{body}"
 
                         response = client.chat.completions.create(
@@ -265,12 +352,38 @@ else:
                         sentiment = response.choices[0].message.content.strip()
 
                         # Update the sentiment opinion in both dataframes
-                        unique_stories.at[counter, 'Sentiment Opinion'] = sentiment
+                        st.session_state.filtered_stories.at[counter, 'Sentiment Opinion'] = sentiment
+                        st.session_state.unique_stories.loc[
+                            st.session_state.unique_stories[
+                                'Group ID'] == current_group_id, 'Sentiment Opinion'] = sentiment
                         st.session_state.df_traditional.loc[
                             st.session_state.df_traditional[
                                 'Group ID'] == current_group_id, 'Sentiment Opinion'] = sentiment
+
+                        # Update the placeholder with the sentiment opinion
+                        sentiment_placeholder.write(sentiment)
+                        # st.rerun()
+
                     except Exception as e:
                         st.error(f"An unexpected error occurred: {e}")
 
 
-                st.write(sentiment)
+            if counter + 1 == total_stories:
+
+                if st.button('Back to the first story'):
+                    st.session_state.counter = 0
+                    st.session_state.filtered_counter = 0
+                    st.rerun()
+
+    else:
+        st.info("You have reached the end of the stories.")
+        st.rerun()
+
+        if counter + 1 == total_stories:
+
+            if st.button('Back to the first story'):
+                st.session_state.counter = 0
+                st.session_state.filtered_counter = 0
+                st.rerun()
+
+
