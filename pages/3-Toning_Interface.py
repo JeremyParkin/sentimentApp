@@ -155,7 +155,21 @@ elif not st.session_state.config_step:
     st.error('Please run the configuration step before trying this step.')
 else:
     # Add a toggle to the sidebar
-    st.session_state.view_flagged_only = st.sidebar.toggle('Review Flagged')
+    # st.session_state.view_flagged_only = st.sidebar.toggle('Review Flagged')
+    with st.sidebar.form('Review Flagged'):
+        if not st.session_state.view_flagged_only:
+            toggle_button = st.form_submit_button('View Flagged Stories')
+        else:
+            toggle_button = st.form_submit_button('View All Stories')
+
+        if toggle_button and not st.session_state.view_flagged_only:
+            st.session_state.view_flagged_only = True
+            st.rerun()
+        if toggle_button and st.session_state.view_flagged_only:
+            st.session_state.view_flagged_only = False
+            st.rerun()
+
+
 
     # Use the appropriate counter depending on the view
     if st.session_state.view_flagged_only:

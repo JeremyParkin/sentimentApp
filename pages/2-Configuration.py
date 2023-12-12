@@ -87,6 +87,8 @@ def identify_duplicates(similarity_matrix):
 def clean_snippet(snippet):
     if snippet.startswith(">>>"):
         return snippet.replace(">>>", "", 1)
+    if snippet.startswith(">>"):
+        return snippet.replace(">>", "", 1)
     else:
         return snippet
 
