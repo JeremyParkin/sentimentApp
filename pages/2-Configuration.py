@@ -171,7 +171,7 @@ else:
             if 'Flagged for Review' not in st.session_state.df_traditional.columns:
                 st.session_state.df_traditional['Flagged for Review'] = False
 
-            st.session_state.df_traditional = st.session_state.df_traditional.dropna(thresh=3)
+            # st.session_state.df_traditional = st.session_state.df_traditional.dropna(thresh=3)
 
 
             if random_sample == 'Yes, take a sample':

@@ -28,7 +28,7 @@ for _ in df_vars:
     if _ not in st.session_state:
         st.session_state[_] = pd.DataFrame()
 
-bool_vars = ['upload_step', 'config_step', 'sentiment_opinion', 'random_sample']
+bool_vars = ['upload_step', 'config_step', 'sentiment_opinion', 'random_sample',]
 for _ in bool_vars:
     if _ not in st.session_state:
         st.session_state[_] = False
@@ -50,34 +50,47 @@ if st.session_state.upload_step:
 if not st.session_state.upload_step:
     st.info("RECOMMENDATION: Clear out junky mentions from your CSV before uploading.")
 
-    with st.form('User Inputs'):
-        client = st.text_input('Client organization name*', placeholder='eg. Air Canada', key='client',
-                               help='Required to build export file name.')
-        focus = st.text_input('Reporting period or focus*', placeholder='eg. March 2022', key='period',
-                               help='Required to build export file name.')
-        uploaded_file = st.file_uploader(label='Upload your CSV*', type='csv',
-                                         accept_multiple_files=False,
-                                         help='Only use CSV files exported from the Agility Platform.')
 
-        submitted = st.form_submit_button("Submit", type="primary")
+    client = st.text_input('Client / Competitor to be toned*', placeholder='eg. Air Canada', key='client',
+                           help='Required to build export file name.')
+    focus = st.text_input('Reporting period or focus*', placeholder='eg. March 2022', key='period',
+                          help='Required to build export file name.')
+    uploaded_file = st.file_uploader(label='Upload your CSV or XLSX*', type=['csv', 'xlsx'],
+                                     accept_multiple_files=False,
+                                     )
 
+
+    if not uploaded_file == None:
+        if uploaded_file.type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+            # Read the xlsx file
+            excel_file = pd.ExcelFile(uploaded_file)
+            # Get the sheet names
+            sheet_names = excel_file.sheet_names
+            # If there is more than one sheet, let the user select which one to use
+            if len(sheet_names) > 1:
+
+                sheet = st.selectbox('Select a sheet:', sheet_names)
+                st.session_state.df_traditional = pd.read_excel(excel_file, sheet_name=sheet)
+            else:
+                st.session_state.df_traditional = pd.read_excel(excel_file)
+        elif uploaded_file.type == 'text/csv':
+            st.session_state.df_traditional = pd.read_csv(uploaded_file)
+
+
+    submitted = st.button("Submit", type="primary")
 
     if submitted and (client == "" or focus == "" or uploaded_file is None):
         st.error('Missing required form inputs above.')
 
     elif submitted:
         with st.spinner("Converting file format."):
-            st.session_state.df_traditional = pd.read_csv(uploaded_file)
-
-            st.session_state.full_dataset = st.session_state.df_traditional.copy()
 
             st.session_state.client_name = client
             st.session_state.focus = focus
-
-            with st.expander('Uploaded File Preview'):
-                st.dataframe(st.session_state.df_traditional)
-
+            st.session_state.full_dataset = st.session_state.df_traditional.copy()
             st.session_state.df_traditional.rename(columns={"Coverage Snippet": "Snippet"}, inplace=True)
 
+
             st.session_state.upload_step = True
+
             st.rerun()
