@@ -150,25 +150,12 @@ def translate(text):
 if not st.session_state.upload_step:
     st.title("Toning Interface")
     st.error('Please upload a CSV before trying this step.')
+
 elif not st.session_state.config_step:
     st.title("Toning Interface")
     st.error('Please run the configuration step before trying this step.')
-else:
-    # Add a toggle to the sidebar
-    # st.session_state.view_flagged_only = st.sidebar.toggle('Review Flagged')
-    # with st.sidebar.form('Review Flagged'):
-    #     if not st.session_state.view_flagged_only:
-    #         toggle_button = st.form_submit_button('View Flagged Stories')
-    #     else:
-    #         toggle_button = st.form_submit_button('View All Stories')
-    #
-    #     if toggle_button and not st.session_state.view_flagged_only:
-    #         st.session_state.view_flagged_only = True
-    #         st.rerun()
-    #     if toggle_button and st.session_state.view_flagged_only:
-    #         st.session_state.view_flagged_only = False
-    #         st.rerun()
 
+else:
     if not st.session_state.view_flagged_only:
         toggle_button = st.sidebar.button('View Flagged Stories')
     else:
@@ -358,6 +345,11 @@ else:
                 # Create a placeholder for the sentiment opinion
                 sentiment_placeholder = st.empty()
 
+                # Define story_prompt here
+                head = escape_markdown(f"{st.session_state.filtered_stories.iloc[counter]['Headline']}")
+                body = escape_markdown(f"{st.session_state.filtered_stories.iloc[counter]['Snippet']}")
+                story_prompt = f"\n{st.session_state.sentiment_instruction}\nThis is the news story:\n{head}\n{body}"
+
 
                 # Check if the response for this story is already stored or exists in the dataframe
                 if pd.notna(st.session_state.filtered_stories.iloc[counter]['Sentiment Opinion']):
@@ -390,6 +382,38 @@ else:
 
                         # Update the placeholder with the sentiment opinion
                         sentiment_placeholder.write(sentiment)
+
+                    except Exception as e:
+                        st.error(f"An unexpected error occurred: {e}")
+
+                # Add a button to request a smarter sentiment opinion
+                if st.button('Try GPT4 sentiment'):
+                    try:
+                        # Display a loading message
+                        sentiment_placeholder.info('Generating GPT4 sentiment opinion...')
+
+                        # Make a new API call with the updated model ID
+                        response = client.chat.completions.create(
+                            model="gpt-4-1106-preview",
+                            messages=[
+                                {"role": "system",
+                                 "content": "You are a highly knowledgeable media analysis AI."},
+                                {"role": "user", "content": story_prompt}])
+
+                        # Get the new sentiment opinion
+                        smarter_sentiment = response.choices[0].message.content.strip()
+
+                        # Update the sentiment opinion in both dataframes
+                        st.session_state.filtered_stories.at[counter, 'Sentiment Opinion'] = smarter_sentiment
+                        st.session_state.unique_stories.loc[
+                            st.session_state.unique_stories[
+                                'Group ID'] == current_group_id, 'Sentiment Opinion'] = smarter_sentiment
+                        st.session_state.df_traditional.loc[
+                            st.session_state.df_traditional[
+                                'Group ID'] == current_group_id, 'Sentiment Opinion'] = smarter_sentiment
+
+                        # Update the placeholder with the new sentiment opinion
+                        sentiment_placeholder.write(smarter_sentiment)
 
                     except Exception as e:
                         st.error(f"An unexpected error occurred: {e}")
