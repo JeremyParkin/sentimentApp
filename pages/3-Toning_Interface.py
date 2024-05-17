@@ -364,7 +364,7 @@ else:
                         story_prompt = f"\n{st.session_state.sentiment_instruction}\nThis is the news story:\n{head}\n{body}"
 
                         response = client.chat.completions.create(
-                            model="gpt-3.5-turbo-1106",
+                            model="gpt-4o",
                             messages=[
                                 {"role": "system", "content": "You are a highly knowledgeable media analysis AI."},
                                 {"role": "user", "content": story_prompt}])
@@ -387,14 +387,14 @@ else:
                         st.error(f"An unexpected error occurred: {e}")
 
                 # Add a button to request a smarter sentiment opinion
-                if st.button('Try GPT4 sentiment'):
+                if st.button('Get a second opinion'):
                     try:
                         # Display a loading message
                         sentiment_placeholder.info('Generating GPT4 sentiment opinion...')
 
                         # Make a new API call with the updated model ID
                         response = client.chat.completions.create(
-                            model="gpt-4-1106-preview",
+                            model="gpt-4o",
                             messages=[
                                 {"role": "system",
                                  "content": "You are a highly knowledgeable media analysis AI."},
