@@ -6,7 +6,7 @@ def standard_sidebar():
     st.sidebar.image('https://agilitypr.news/images/Agility-centered.svg', width=200)
     st.sidebar.header('MIG: Toning App')
     # st.sidebar.write("*Generate a random sample, group similar stories, and make toning easier*")
-    st.sidebar.caption("v.0.3 - Dec 2024")
+    st.sidebar.caption("v.1.0 - Dec 2024")
 
     # CSS to adjust sidebar
     adjust_nav = """

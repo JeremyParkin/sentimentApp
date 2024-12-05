@@ -155,7 +155,6 @@ else:
                     the phrase "NOT RELEVANT: {named_entity} not mentioned in the story."
                     """
 
-
             else:
                 st.session_state.sentiment_type = '5-way'
                 sentiment_instruction = f"""

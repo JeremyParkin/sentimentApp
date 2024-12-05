@@ -7,3 +7,4 @@ XlsxWriter~=3.2.0
 streamlit-tags~=1.2.8
 deep-translator~=1.11.4
 openpyxl~=3.1.5
+
