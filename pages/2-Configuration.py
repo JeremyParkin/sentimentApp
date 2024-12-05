@@ -3,6 +3,7 @@ import pandas as pd
 import mig_functions as mig
 import openai
 from openai import OpenAI
+
 client = OpenAI(api_key=st.secrets["key"])
 import math
 import re
@@ -11,12 +12,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from streamlit_tags import st_tags
 
-
 # Set Streamlit configuration
 st.set_page_config(page_title="MIG Sentiment Tool",
                    page_icon="https://www.agilitypr.com/wp-content/uploads/2018/02/favicon-192.png",
                    layout="wide")
-
 
 st.session_state.current_page = 'Configuration'
 
@@ -25,6 +24,7 @@ mig.standard_sidebar()
 
 
 def normalize_text(text):
+    """Convert to lowercase, remove extra spaces, remove punctuation, etc."""
     # Convert to string in case the input is not a string
     text = str(text)
     # Convert to lowercase
@@ -40,6 +40,7 @@ def normalize_text(text):
 
 
 def remove_extra_spaces(text):
+    """Remove extra spaces from the beginning and end of a string and replace multiple spaces with a single space."""
     # Convert to string in case the input is not a string
     text = str(text)
     # Remove extra spaces from the beginning and end
@@ -49,8 +50,8 @@ def remove_extra_spaces(text):
     return text
 
 
-
 def calculate_similarity(df):
+    """Calculate the similarity between each article using TF-IDF and cosine similarity."""""
     tfidf_vectorizer = TfidfVectorizer()
     tfidf_matrix = tfidf_vectorizer.fit_transform(df['Normalized Headline'] + " " + df['Normalized Snippet'])
     cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
@@ -58,6 +59,7 @@ def calculate_similarity(df):
 
 
 def assign_group_ids(duplicates):
+    """Assign a group ID to each article based on the similarity matrix."""
     group_id = 0
     group_ids = {}
 
@@ -71,27 +73,25 @@ def assign_group_ids(duplicates):
     return group_ids
 
 
-
 def identify_duplicates(similarity_matrix):
+    """Identify duplicate articles based on the similarity matrix."""
     duplicates = {}
     for i in range(similarity_matrix.shape[0]):
         duplicates[i] = []
         for j in range(similarity_matrix.shape[1]):
             if i != j and similarity_matrix[i][j] > st.session_state.similarity_threshold:
                 duplicates[i].append(j)
-    # st.write("Duplicates identified:", duplicates)
     return duplicates
 
 
-
 def clean_snippet(snippet):
+    """Remove the '>>>' or '>>' from braodcast snippets."""
     if snippet.startswith(">>>"):
         return snippet.replace(">>>", "", 1)
     if snippet.startswith(">>"):
         return snippet.replace(">>", "", 1)
     else:
         return snippet
-
 
 
 st.title("Configuration")
@@ -114,7 +114,8 @@ else:
 
             c1, c2, c3, c4 = st.columns(4, gap="large")
             with c1:
-                random_sample = st.radio('Toning sample?', ['Yes, take a sample', 'No, use full data', ],help="Get a statistically significant random sample based on your uploaded data set.")
+                random_sample = st.radio('Toning sample?', ['Yes, take a sample', 'No, use full data', ],
+                                         help="Get a statistically significant random sample based on your uploaded data set.")
 
             with c2:
                 sentiment_opinion_selector = st.radio(
@@ -122,16 +123,15 @@ else:
                     key='opinion_choice', help='Get GPT sentiment suggestions based on the article and client brand.')
 
             with c3:
-                sentiment_type = st.radio("Sentiment Type", ['3-way', '5-way'], help='3-way is the standard approach.  5-way insteade uses *very positive*, *somewhat positive*, *neutral*, etc.')
+                sentiment_type = st.radio("Sentiment Type", ['3-way', '5-way'],
+                                          help='3-way is the standard approach.  5-way insteade uses *very positive*, *somewhat positive*, *neutral*, etc.')
 
             with c4:
-                similarity_threshold = st.slider('Similarity level for grouping', min_value=0.85, value=0.9, max_value=1.0, help='Group articles that are the same or almost the same to be toned together.  0.85 is very similar, 1.0 is identical.')
-
-
+                similarity_threshold = st.slider('Similarity level for grouping', min_value=0.85, value=0.9,
+                                                 max_value=1.0,
+                                                 help='Group articles that are the same or almost the same to be toned together.  0.85 is very similar, 1.0 is identical.')
 
             submitted = st.form_submit_button("Save Configuration", type="primary")
-
-
 
         if submitted:
             # st.session_state.df_traditional['Group ID'] = ''
@@ -149,9 +149,10 @@ else:
             if sentiment_type == '3-way':
                 st.session_state.sentiment_type = '3-way'
                 sentiment_instruction = f"""
-                    Please indicate the sentiment of the following news story as it relates to {named_entity}. 
+                    Please indicate the sentiment of the following news story as it pertains to {named_entity}. 
                     Start with one word: POSITIVE, NEUTRAL, or NEGATIVE - followed by a colon then a one sentence rationale 
-                    as to why that sentiment was chosen. 
+                    as to why that sentiment was chosen. If {named_entity} is not mentioned in the story, please reply with 
+                    the phrase "NOT RELEVANT: {named_entity} not mentioned in the story."
                     """
 
 
@@ -160,7 +161,8 @@ else:
                 sentiment_instruction = f"""
                     Please indicate the sentiment of the following news story as it relates to {named_entity}. 
                     Start with the label: 'VERY POSITIVE', 'SOMEWHAT POSITIVE', 'NEUTRAL', 'SOMEWHAT NEGATIVE' or 'VERY NEGATIVE' - 
-                    followed by a colon then a one sentence rationale as to why that sentiment was chosen. 
+                    followed by a colon then a one sentence rationale as to why that sentiment was chosen. If {named_entity} is 
+                    not mentioned in the story, please reply with the phrase "NOT RELEVANT: {named_entity} not mentioned in the story."
                     """
 
             st.session_state.sentiment_instruction = sentiment_instruction
@@ -172,7 +174,6 @@ else:
                 st.session_state.df_traditional['Flagged for Review'] = False
 
             # st.session_state.df_traditional = st.session_state.df_traditional.dropna(thresh=3)
-
 
             if random_sample == 'Yes, take a sample':
                 def calculate_sample_size(N, confidence_level=0.95, margin_of_error=0.05, p=0.5):
@@ -189,13 +190,12 @@ else:
                 population_size = len(st.session_state.full_dataset)
                 sample_size = calculate_sample_size(population_size)
 
-
                 st.session_state.sample_size = sample_size
-
 
                 # Take a random sample of the DataFrame
                 if sample_size < population_size:
-                    df = st.session_state.df_traditional.sample(n=sample_size, random_state=1).reset_index(drop=True) #n=sample_size, random_state=1
+                    df = st.session_state.df_traditional.sample(n=sample_size, random_state=1).reset_index(
+                        drop=True)  # n=sample_size, random_state=1
                 else:
                     # If the sample size is greater than or equal to the population, use the entire DataFrame
                     df = st.session_state.df_traditional.copy()
@@ -225,7 +225,6 @@ else:
 
             duplicate_groups = identify_duplicates(similarity_matrix)
 
-
             # Assign group IDs
             group_ids = assign_group_ids(duplicate_groups)
             df['Group ID'] = df.index.map(group_ids)
@@ -245,12 +244,11 @@ else:
             unique_stories_with_counts = unique_stories.merge(group_counts, on='Group ID')
 
             st.write('Unique Stories with Counts')
-            st.write(unique_stories_with_counts) # NO GROUP ID here
+            st.write(unique_stories_with_counts)  # NO GROUP ID here
 
             # Sort unique stories by group count in descending order
             unique_stories_sorted = unique_stories_with_counts.sort_values(by='Group Count',
                                                                            ascending=False).reset_index(drop=True)
-
 
             # Update the session state
             st.session_state.unique_stories = unique_stories_sorted
@@ -263,7 +261,6 @@ else:
         st.write(f"Full data size: {len(st.session_state.full_dataset)}")
         st.write(f"Calculated sample size: {st.session_state.sample_size}")
         st.write(f"Unique stories in sample: {len(st.session_state.unique_stories)}")
-
 
 
         def reset_config():

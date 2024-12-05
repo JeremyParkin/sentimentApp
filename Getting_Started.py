@@ -18,7 +18,8 @@ st.title("Getting Started")
 # Initialize Session State Variables
 string_vars = {'page': '1: Getting Started', 'sentiment_type': '3-way', 'client_name': '', 'focus': '',
                'model_choice': 'GPT-3.5', 'similarity_threshold': 0.95, 'counter': 0, 'analysis_note': '', 'group_ids':'',
-               'sample_size': 0, 'highlight_keyword':'', 'current_page': 'Getting Started'}
+               'sample_size': 0, 'highlight_keyword':'', 'current_page': 'Getting Started', 'min_impressions': 0, 'min_domain_authority': 0,}
+
 for key, value in string_vars.items():
     if key not in st.session_state:
         st.session_state[key] = value

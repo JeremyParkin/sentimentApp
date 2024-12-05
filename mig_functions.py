@@ -6,18 +6,16 @@ def standard_sidebar():
     st.sidebar.image('https://agilitypr.news/images/Agility-centered.svg', width=200)
     st.sidebar.header('MIG: Toning App')
     # st.sidebar.write("*Generate a random sample, group similar stories, and make toning easier*")
-    st.sidebar.caption("v.0.2 - Dec 2023")
+    st.sidebar.caption("v.0.3 - Dec 2024")
 
     # CSS to adjust sidebar
     adjust_nav = """
                             <style>
                             .eczjsme9 {
-                                min-height: 50vh !important;
                                 overflow: visible !important;
                                 max-width: 244px !important;
                                 }
                             .st-emotion-cache-a8w3f8 {
-                                min-height: 50vh !important;
                                 overflow: visible !important;
                                 }
                             .st-emotion-cache-1cypcdb {
