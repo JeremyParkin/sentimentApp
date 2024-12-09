@@ -159,7 +159,7 @@ else:
                     Positive Sentiment: Praises or highlights the entity's achievements, contributions, or strengths. Uses favorable or supportive language toward the entity. Attributes beneficial or advantageous outcomes to the entity's actions.
                     Neutral Sentiment: Provides balanced or factual coverage regarding the entity without clear positive or negative framing. Avoids strong language or bias in favor of or against the entity. Mentions the entity in a way that is neither supportive nor critical.
                     Negative Sentiment: Criticizes, highlights failures, or associates the entity with challenges or issues. Uses unfavorable, disparaging, or hostile language toward the entity. Attributes negative outcomes or controversies to the entity's actions or decisions.
-                    Note: Focus your analysis strictly on the sentiment toward {named_entity} rather than the broader topic or context of the story. Provide the uppercase sentiment classification (POSITIVE, NEUTRAL, or NEGATIVE) followed by a colon, then a one to two sentence explanation supporting your assessment. 
+                    IMPORTANT: Focus your analysis strictly on the sentiment toward {named_entity} rather than the broader topic or context of the story. Provide the uppercase sentiment classification (POSITIVE, NEUTRAL, or NEGATIVE) followed by a colon, then a one to two sentence explanation supporting your assessment. 
                     If {named_entity} is not mentioned in the story, please reply with the phrase "NOT RELEVANT: {named_entity} not mentioned in the story. Here is the story:
                     """
 
@@ -172,7 +172,7 @@ else:
                     Neutral: Provides balanced or factual coverage regarding the entity without clear positive or negative framing. Avoids strong language or bias in favor of or against the entity. Mentions the entity in a way that is neither supportive nor critical.
                     Somewhat Negative: Points out minor flaws, challenges, or criticisms related to the entity. Uses mildly unfavorable language or frames the entity in a somewhat negative light. Attributes minor or moderate negative outcomes to the entity's actions.
                     Very Negative: Strongly criticizes the entity's actions, failures, or associations with significant issues. Uses highly unfavorable, disparaging, or hostile language toward the entity. Attributes substantial negative outcomes or impacts to the entity's actions.
-                    Note: Focus your analysis strictly on the sentiment toward {named_entity} rather than the broader topic or context of the story. Provide the uppercase sentiment classification (VERY POSITIVE, SOMEWHAT POSITIVE, NEUTRAL, SOMEWHAT NEGATIVE, or VERY NEGATIVE) followed by a colon, then a one to two sentence explanation supporting your assessment.  
+                    IMPORTANT: Focus your analysis strictly on the sentiment toward {named_entity} rather than the broader topic or context of the story. Provide the uppercase sentiment classification (VERY POSITIVE, SOMEWHAT POSITIVE, NEUTRAL, SOMEWHAT NEGATIVE, or VERY NEGATIVE) followed by a colon, then a one to two sentence explanation supporting your assessment.  
                     If {named_entity} is not mentioned in the story, please reply with the phrase "NOT RELEVANT: {named_entity} not mentioned in the story. Here is the story:
                     """
 
