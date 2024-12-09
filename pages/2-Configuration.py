@@ -235,8 +235,12 @@ else:
                     df['Sentiment Opinion'] = None
 
             df['Headline'] = df['Headline'].apply(remove_extra_spaces)
-            df['Snippet'] = df['Snippet'].apply(remove_extra_spaces)
-            df['Snippet'] = df['Snippet'].apply(clean_snippet)
+            if 'Snippet' in df.columns:
+                df['Snippet'] = df['Snippet'].apply(remove_extra_spaces)
+                df['Snippet'] = df['Snippet'].apply(clean_snippet)
+            if 'Coverage Snippet' in df.columns:
+                df['Coverage Snippet'] = df['Coverage Snippet'].apply(remove_extra_spaces)
+                df['Coverage Snippet'] = df['Coverage Snippet'].apply(clean_snippet)
             df['Normalized Headline'] = df['Headline'].apply(normalize_text)
             df['Normalized Snippet'] = df['Snippet'].apply(normalize_text)
 
