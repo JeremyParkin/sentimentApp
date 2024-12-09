@@ -364,7 +364,7 @@ else:
                         story_prompt = f"\n{st.session_state.sentiment_instruction}\nThis is the news story:\n{head}\n{body}"
 
                         response = client.chat.completions.create(
-                            model="gpt-4o-mini",
+                            model="gpt-4o",
                             messages=[
                                 {"role": "system", "content": "You are a highly knowledgeable media analysis AI."},
                                 {"role": "user", "content": story_prompt}])
