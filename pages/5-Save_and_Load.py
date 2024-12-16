@@ -24,19 +24,21 @@ dt_string = datetime.now().strftime("%Y-%m-%d-%H-%M")
 
 
 def save_session_state():
-    # Manually copy necessary items from session state
-    session_data = {key: value for key, value in st.session_state.items() if key not in st.session_state.df_names}
+    # Copy all session state except DataFrames for manual handling
+    session_data = {key: value for key, value in st.session_state.items() if key not in ['df_traditional', 'unique_stories', 'full_dataset']}
 
-    # Directly serialize DataFrames in session state
-    for df_name in st.session_state.df_names:
-        if df_name in st.session_state and not st.session_state[df_name].empty:
-            session_data[df_name] = st.session_state[df_name]  # Save DataFrame directly
+    # Handle specific DataFrames
+    for df_name in ['df_traditional', 'unique_stories', 'full_dataset']:
+        if df_name in st.session_state:
+            df = st.session_state[df_name]
+            if not df.empty:
+                session_data[df_name] = df  # Save DataFrame directly
 
-    # Serialize the session state
+    # Serialize the session state using dill
     serialized_data = dill.dumps(session_data)
+    st.write("Serialized data size:", len(serialized_data))  # Debugging output
 
-    # Provide downloadable file link
-    file_name = f"{st.session_state.client_name} - {dt_string}.pkl"
+    file_name = f"{st.session_state.get('client_name', 'Session')} - {dt_string}.pkl"
     st.download_button(label="Download Session File",
                        data=serialized_data,
                        file_name=file_name,
@@ -45,35 +47,38 @@ def save_session_state():
 
 def load_session_state(uploaded_file):
     if uploaded_file is not None:
-        # Read the uploaded file
+        # Deserialize session state using dill
         session_data = dill.loads(uploaded_file.read())
+        st.write("Loaded session data keys:", session_data.keys())  # Debugging output
 
-        # Check for and restore DataFrames
-        for df_name in st.session_state.df_names:
+        # Restore DataFrames manually
+        for df_name in ['df_traditional', 'unique_stories', 'full_dataset']:
             if df_name in session_data:
                 data = session_data[df_name]
-                # Check if the data is a CSV string (legacy format)
-                if isinstance(data, str) and "\n" in data:  # Simple heuristic to identify CSV content
+                # Check for legacy CSV format
+                if isinstance(data, str) and "\n" in data:
                     buffer = io.StringIO(data)
                     df = pd.read_csv(buffer)
 
-                    # Automatically convert 'Date' columns to datetime
+                    # Convert 'Date' column to datetime if present
                     if 'Date' in df.columns:
                         df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
 
-                    # Restore DataFrame to session state
+                    # Save restored DataFrame to session state
                     st.session_state[df_name] = df
                 else:
-                    # Assume it's already a DataFrame in the new format
+                    # Directly restore DataFrame
                     st.session_state[df_name] = data
 
-        # Update non-DataFrame variables in session state
+        # Restore other session state variables
         for key, value in session_data.items():
-            if key not in st.session_state.df_names:
+            if key not in ['df_traditional', 'unique_stories', 'full_dataset']:
                 st.session_state[key] = value
 
         st.session_state.pickle_load = True
         st.success("Session state loaded successfully!")
+
+
 
 # def save_session_state():
 #     # Manually copy necessary items from session state
