@@ -6,7 +6,7 @@ def standard_sidebar():
     st.sidebar.image('https://agilitypr.news/images/Agility-centered.svg', width=200)
     st.sidebar.header('MIG: Toning App')
     # st.sidebar.write("*Generate a random sample, group similar stories, and make toning easier*")
-    st.sidebar.caption("v.1.0 - Dec 2024")
+    st.sidebar.caption("Version: Dec 2024")
 
     # CSS to adjust sidebar
     adjust_nav = """
@@ -25,6 +25,10 @@ def standard_sidebar():
                             """
     # Inject CSS with Markdown
     st.markdown(adjust_nav, unsafe_allow_html=True)
+
+    # Add link to submit bug reports and feature requests
+    st.sidebar.markdown(
+        "[App Feedback](https://forms.office.com/Pages/ResponsePage.aspx?id=GvcJkLbBVUumZQrrWC6V07d2jCu79C5FsfEZJPZEfZxUNVlIVDRNNVBQVEgxQVFXNEM5VldUMkpXNS4u)")
 
 
 def top_x_by_mentions(df, column_name):
