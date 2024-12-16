@@ -36,7 +36,7 @@ def save_session_state():
 
     # Serialize the session state using dill
     serialized_data = dill.dumps(session_data)
-    st.write("Serialized data size:", len(serialized_data))  # Debugging output
+    # st.write("Serialized data size:", len(serialized_data))  # Debugging output
 
     file_name = f"{st.session_state.get('client_name', 'Session')} - {dt_string}.pkl"
     st.download_button(label="Download Session File",
@@ -49,7 +49,7 @@ def load_session_state(uploaded_file):
     if uploaded_file is not None:
         # Deserialize session state using dill
         session_data = dill.loads(uploaded_file.read())
-        st.write("Loaded session data keys:", session_data.keys())  # Debugging output
+        # st.write("Loaded session data keys:", session_data.keys())  # Debugging output
 
         # Restore DataFrames manually
         for df_name in ['df_traditional', 'unique_stories', 'full_dataset']:
