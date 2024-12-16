@@ -15,6 +15,9 @@ def standard_sidebar():
                                 overflow: visible !important;
                                 max-width: 244px !important;
                                 }
+                            .eczjsme10 {
+                                min-height: 470px !important;
+                                }
                             .st-emotion-cache-a8w3f8 {
                                 overflow: visible !important;
                                 }
