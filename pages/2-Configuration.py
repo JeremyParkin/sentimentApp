@@ -272,6 +272,7 @@ else:
 
             else:
                 st.session_state.sample_size = len(st.session_state.full_dataset)
+                st.write(f"Data set size: {st.session_state.sample_size}")
 
             similarity_threshold = 0.93
             st.session_state.similarity_threshold = similarity_threshold
