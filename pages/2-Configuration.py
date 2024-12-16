@@ -155,38 +155,6 @@ def cluster_by_media_type(df, similarity_threshold=0.92):
 
 
 
-# def calculate_similarity(df):
-#     """Calculate the similarity between each article using TF-IDF and cosine similarity."""""
-#     tfidf_vectorizer = TfidfVectorizer()
-#     tfidf_matrix = tfidf_vectorizer.fit_transform(df['Normalized Headline'] + " " + df['Normalized Snippet'])
-#     cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
-#     return cosine_sim
-#
-#
-# def assign_group_ids(duplicates):
-#     """Assign a group ID to each article based on the similarity matrix."""
-#     group_id = 0
-#     group_ids = {}
-#
-#     for i, similar_indices in duplicates.items():
-#         if i not in group_ids:
-#             group_ids[i] = group_id
-#             for index in similar_indices:
-#                 group_ids[index] = group_id
-#             group_id += 1
-#
-#     return group_ids
-
-
-# def identify_duplicates(similarity_matrix):
-#     """Identify duplicate articles based on the similarity matrix."""
-#     duplicates = {}
-#     for i in range(similarity_matrix.shape[0]):
-#         duplicates[i] = []
-#         for j in range(similarity_matrix.shape[1]):
-#             if i != j and similarity_matrix[i][j] > st.session_state.similarity_threshold:
-#                 duplicates[i].append(j)
-#     return duplicates
 
 
 def identify_duplicates(cluster_labels):  ## refactored for agg clustering
@@ -213,7 +181,7 @@ def clean_snippet(snippet):
 
 st.title("Configuration")
 if not st.session_state.upload_step:
-    st.error('Please upload a CSV before trying this step.')
+    st.error('Please upload a CSV/XLSX before trying this step.')
 
 
 else:

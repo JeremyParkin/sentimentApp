@@ -149,7 +149,7 @@ def translate(text):
 
 if not st.session_state.upload_step:
     st.title("Toning Interface")
-    st.error('Please upload a CSV before trying this step.')
+    st.error('Please upload a CSV/XLSX before trying this step.')
 
 elif not st.session_state.config_step:
     st.title("Toning Interface")
