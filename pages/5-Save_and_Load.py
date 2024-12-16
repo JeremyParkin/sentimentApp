@@ -126,23 +126,51 @@ if not st.session_state.upload_step:
 elif not st.session_state.config_step:
     st.error('Please run the configuration step before SAVING.')
 
-else:
-    st.divider()
+# else:
+#     st.divider()
+#
+#     st.header("Save")
+#     st.info("**SAVE** your current data-processing session to a downloadable .pkl file")
+#
+#     # When this button is clicked, the save_session_state function will be executed
+#     if st.button("Generate Session File to Download"):
+#         # Generate the download link (or any other way you handle the saving)
+#         href = save_session_state()
+#
+#         st.markdown(href, unsafe_allow_html=True)
+#
+#     st.divider()
+#
+# st.header("Load")
+# st.info("**LOAD** a previously saved data-processing session from a downloaded .pkl file")
+# uploaded_file = st.file_uploader("Upload Session State", type="pkl")
+# if uploaded_file is not None:
+#     load_session_state(uploaded_file)
 
-    st.header("Save")
+else:
     st.info("**SAVE** your current data-processing session to a downloadable .pkl file")
+
+
 
     # When this button is clicked, the save_session_state function will be executed
     if st.button("Generate Session File to Download"):
-        # Generate the download link (or any other way you handle the saving)
+        placeholder = st.empty()
+        placeholder.info("Processing... please wait.")
+        # Generate the download link
         href = save_session_state()
 
-        st.markdown(href, unsafe_allow_html=True)
+        # Show the download link
+        if href:  # Only display if href is not None
+            st.markdown(href, unsafe_allow_html=True)
+        placeholder.empty()
+
+
 
     st.divider()
 
-st.header("Load")
+st.header("LOAD")
 st.info("**LOAD** a previously saved data-processing session from a downloaded .pkl file")
-uploaded_file = st.file_uploader("Upload Session State", type="pkl")
+
+uploaded_file = st.file_uploader("Restore a Previous Session", type="pkl", label_visibility="hidden")
 if uploaded_file is not None:
     load_session_state(uploaded_file)
