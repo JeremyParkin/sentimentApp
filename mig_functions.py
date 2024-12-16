@@ -4,7 +4,7 @@ import streamlit as st
 def standard_sidebar():
     import streamlit as st
     st.sidebar.image('https://agilitypr.news/images/Agility-centered.svg', width=200)
-    st.sidebar.header('MIG: Toning App')
+    st.sidebar.header('MIG Toning App')
     # st.sidebar.write("*Generate a random sample, group similar stories, and make toning easier*")
     st.sidebar.caption("Version: Dec 2024")
 
