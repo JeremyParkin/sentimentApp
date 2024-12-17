@@ -110,11 +110,22 @@ def cluster_similar_stories(df, similarity_threshold=0.85):
     tfidf_vectorizer = TfidfVectorizer()
     tfidf_matrix = tfidf_vectorizer.fit_transform(df['Normalized Headline'] + " " + df['Normalized Snippet']).toarray()
 
-    # Check if there are at least 2 samples
     if tfidf_matrix.shape[0] < 2:
-        # Assign a default cluster label if there are fewer than 2 samples
+        # Assign a default Group ID for single sample
         df['Group ID'] = 0
         return df
+
+    # Ensure cosine_distance_matrix is valid
+    if tfidf_matrix.shape[0] < 2 or cosine_distance_matrix.shape[0] < 2:
+        df['Group ID'] = 0
+        return df
+
+    #
+    # # Check if there are at least 2 samples
+    # if tfidf_matrix.shape[0] < 2:
+    #     # Assign a default cluster label if there are fewer than 2 samples
+    #     df['Group ID'] = 0
+    #     return df
 
     # Compute cosine distances
     cosine_distance_matrix = cosine_distances(tfidf_matrix)
