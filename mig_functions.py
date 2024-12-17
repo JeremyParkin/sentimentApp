@@ -13,7 +13,7 @@ def standard_sidebar():
                             <style>
                             .eczjsme9 {
                                 overflow: visible !important;
-                                max-width: 244px !important;
+                                max-width: 250px !important;
                                 }
                             .eczjsme10 {
                                 min-height: 470px !important;
